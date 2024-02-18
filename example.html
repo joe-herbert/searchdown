@@ -12,15 +12,19 @@
             onsubmit="document.getElementById('formResult').innerHTML = 'Basic: ' + this.basic.value + '<br>Multiple: ' + sdGetSelectValues(this.multiple) + '<br>AddValue: ' + this.addValue.value + '<br>MultipleAddValue: ' + sdGetSelectValues(this.multipleAddValue); return false;"
         >
             <label for="basic">Basic input:</label>
+            <br />
             <div id="basic"></div>
             <br />
             <label for="multiple">Multiple input:</label>
+            <br />
             <div id="multiple"></div>
             <br />
             <label for="multiple">Single input allowing added values:</label>
+            <br />
             <div id="addValue"></div>
             <br />
             <label for="multiple-addValue">Multiple input allowing added values:</label>
+            <br />
             <div id="multiple-addValue"></div>
             <br />
             <button type="submit">Submit</button>
