@@ -9,12 +9,18 @@
     </head>
     <body>
         <form
-            onsubmit="document.getElementById('formResult').innerHTML = this.basic.value + '<br>' + sdGetSelectValues(this.multiple) + '<br>' + this.addValue.value + '<br>' + sdGetSelectValues(this.multipleAddValue) + '<br>'; return false;"
+            onsubmit="document.getElementById('formResult').innerHTML = 'Basic: ' + this.basic.value + '<br>Multiple: ' + sdGetSelectValues(this.multiple) + '<br>AddValue: ' + this.addValue.value + '<br>MultipleAddValue: ' + sdGetSelectValues(this.multipleAddValue); return false;"
         >
+            <label for="basic">Basic input:</label>
             <div id="basic"></div>
+            <br />
+            <label for="multiple">Multiple input:</label>
             <div id="multiple"></div>
             <br />
+            <label for="multiple">Single input allowing added values:</label>
             <div id="addValue"></div>
+            <br />
+            <label for="multiple-addValue">Multiple input allowing added values:</label>
             <div id="multiple-addValue"></div>
             <br />
             <button type="submit">Submit</button>
