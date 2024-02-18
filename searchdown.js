@@ -41,6 +41,25 @@ function searchdown(elementId, options) {
         console.error(`No valid values provided for searchdown with id ${elementId}`);
         return false;
     }
+    //set colours
+    if (options.baseBackColor) {
+        element.style.setProperty("--sdBackBase", options.baseBackColor);
+    }
+    if (options.selectedBackColor) {
+        element.style.setProperty("--sdBackSelected", options.selectedBackColor);
+    }
+    if (options.hoverBackColor) {
+        element.style.setProperty("--sdBackHover", options.hoverBackColor);
+    }
+    if (options.baseTextColor) {
+        element.style.setProperty("--sdTextBase", options.baseTextColor);
+    }
+    if (options.selectedTextColor) {
+        element.style.setProperty("--sdTextSelected", options.selectedTextColor);
+    }
+    if (options.hoverTextColor) {
+        element.style.setProperty("--sdTextHover", options.hoverTextColor);
+    }
     //create searchdown html
     let inputWrapper = document.createElement("div");
     inputWrapper.classList.add("sdInputWrapper");

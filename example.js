@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
         caseSensitive: true,
         placeholder: "Search",
         inputName: "basic",
+        baseBackColor: "#f00",
+        selectedBackColor: "#ff0",
+        hoverBackColor: "#0f0",
     });
     searchdown("multiple", {
         values: ["France", "England", "Spain", "Wales", "Ireland", "Germany", "Portugal", "Italy"],

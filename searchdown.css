@@ -1,9 +1,12 @@
 :root {
-    --sdBase: #b1d3f7;
-    --sdSelected: #90a0c3;
-    --sdSelected: color-mix(in srgb, var(--sdBase) 90%, #00f);
-    --sdHover: #8ab7d9;
-    --sdHover: color-mix(in srgb, var(--sdBase) 80%, #00f);
+    --sdBackBase: #b1d3f7;
+    --sdBackSelected: #90a0c3;
+    --sdBackSelected: color-mix(in srgb, var(--sdBackBase) 90%, #00f);
+    --sdBackHover: #8ab7d9;
+    --sdBackHover: color-mix(in srgb, var(--sdBackBase) 80%, #00f);
+    --sdTextBase: #000;
+    --sdTextSelected: #000;
+    --sdTextHover: #000;
 }
 .searchdown,
 .sdInputWrapper,
@@ -17,6 +20,7 @@
     padding: 0;
     margin: 0;
     font: inherit;
+    color: var(--sdTextBase);
 }
 .searchdown {
     display: inline-block;
@@ -43,7 +47,8 @@
     display: inline;
 }
 .sdEntered {
-    background-color: var(--sdBase);
+    background-color: var(--sdBackBase);
+    color: var(--sdTextBase);
     padding: 5px 10px;
     border-radius: 1000px;
     margin-right: 5px;
@@ -76,7 +81,7 @@
     position: absolute;
     z-index: 999;
     border: 1px solid black;
-    background: var(--sdBase);
+    background: var(--sdBackBase);
     transform: translateY(-1px);
 }
 .sdDropdownWrapper.sdTop {
@@ -88,7 +93,9 @@
 .sdOption,
 .sdAddOption {
     padding: 3px 10px;
-    transition: 0.3s background-color;
+    transition:
+        0.3s background-color,
+        0.3s color;
     cursor: pointer;
     list-style: none;
     word-break: break-all;
@@ -96,7 +103,8 @@
 }
 .sdOption:hover,
 .sdAddOption:hover {
-    background-color: var(--sdHover);
+    background-color: var(--sdBackHover);
+    color: var(--sdTextHover);
 }
 .sdOption:first-of-type,
 .sdAddOption:first-of-type {
@@ -107,7 +115,8 @@
     padding-bottom: 6px;
 }
 .sdSelected {
-    background-color: var(--sdSelected);
+    background-color: var(--sdBackSelected);
+    color: var(--sdTextSelected);
     font-weight: bold;
 }
 .sdSelected::before {
