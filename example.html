@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="searchdown.css" />
+        <link rel="stylesheet" href="example.css" />
+        <title>Searchdown Example</title>
+    </head>
+    <body>
+        <form
+            onsubmit="document.getElementById('formResult').innerHTML = this.basic.value + '<br>' + sdGetSelectValues(this.multiple) + '<br>' + this.addValue.value + '<br>' + sdGetSelectValues(this.multipleAddValue) + '<br>'; return false;"
+        >
+            <div id="basic"></div>
+            <div id="multiple"></div>
+            <br />
+            <div id="addValue"></div>
+            <div id="multiple-addValue"></div>
+            <br />
+            <button type="submit">Submit</button>
+        </form>
+        <div id="formResult"></div>
+        <script src="searchdown.js"></script>
+        <script src="example.js"></script>
+    </body>
+</html>

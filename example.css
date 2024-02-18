@@ -1,0 +1,17 @@
+body {
+    font:
+        16px Arial,
+        sans-serif;
+    width: 100vw;
+    height: 100vh;
+}
+
+form,
+button {
+    margin: 0 auto;
+    text-align: center;
+}
+
+form * {
+    text-align: left;
+}
