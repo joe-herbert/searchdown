@@ -38,7 +38,7 @@ The default options are:
         caseSensitive: false,
         placeholder: "Search",
         maxHeight: 600,
-        inputName: "sd" + sdGlobalCount++,
+        inputName: "sd<incrementing-value>",
         baseBackColor: "#b1d3f7",
         selectedBackColor: "#90a0c3",
         hoverBackColor: "#8ab7d9",
