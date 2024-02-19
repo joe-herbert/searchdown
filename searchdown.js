@@ -354,7 +354,7 @@ function sdEnteredContainsValue(enteredWrapper, value, caseSensitive) {
     return false;
 }
 
-function sdGetValue(element) {
+function sdGetValue(element, includeNotEntered) {
     if (typeof element === "string") {
         element = document.getElementById(element);
         if (!element) {
@@ -363,7 +363,7 @@ function sdGetValue(element) {
     }
     if (element.tagName === "SELECT") {
         var result = [];
-        var options = select && select.options;
+        var options = element && element.options;
         var opt;
 
         for (var i = 0; i < options.length; i++) {
@@ -373,9 +373,22 @@ function sdGetValue(element) {
                 result.push(opt.value || opt.text);
             }
         }
+        if (includeNotEntered) {
+            let last = document.getElementsByName(element.name + "LastInput")[0];
+            if (last && last.value) {
+                result.push(last.value);
+            }
+        }
         return result;
     } else if (element.tagName) {
-        return element.value || document.getElementById(element.id + "LastInput").value;
+        if (element.value) {
+            return element.value;
+        } else if (includeNotEntered) {
+            let last = document.getElementsByName(element.name + "LastInput")[0];
+            if (last && last.value) {
+                return last.value;
+            }
+        }
     }
     return false;
 }

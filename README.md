@@ -28,7 +28,7 @@ Call `searchdown(id, options);` (must be done after including the js file), e.g.
         });
     });
 
-You can access the element's value like you would with any input element, or use the function `sdGetValue(element)` to easily retrieve the value for both single and multiple inputs. `element` can be either the HTML element or the id of the element. Check the [demo](https://joe-herbert.github.io/searchdown/example.html) for an example of this being used.
+You can access the element's value like you would with any input element, or use the function `sdGetValue(element, includeNotEntered)` to easily retrieve the value for both single and multiple inputs. `element` can be either the HTML element or the id of the element. Check the [demo](https://joe-herbert.github.io/searchdown/example.html) for an example of this being used.
 
 ## Options
 
