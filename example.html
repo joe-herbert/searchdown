@@ -8,9 +8,7 @@
         <title>Searchdown Example</title>
     </head>
     <body>
-        <form
-            onsubmit="document.getElementById('formResult').innerHTML = 'Basic: ' + this.basic.value + '<br>Multiple: ' + sdGetSelectValues(this.multiple) + '<br>AddValue: ' + this.addValue.value + '<br>MultipleAddValue: ' + sdGetSelectValues(this.multipleAddValue); return false;"
-        >
+        <form onsubmit="formSubmit(this); return false;">
             <label for="basic">Basic input:</label>
             <br />
             <div id="basic"></div>

@@ -354,17 +354,28 @@ function sdEnteredContainsValue(enteredWrapper, value, caseSensitive) {
     return false;
 }
 
-function sdGetSelectValues(select) {
-    var result = [];
-    var options = select && select.options;
-    var opt;
-
-    for (var i = 0; i < options.length; i++) {
-        opt = options[i];
-
-        if (opt.selected) {
-            result.push(opt.value || opt.text);
+function sdGetValue(element) {
+    if (typeof element === "string") {
+        element = document.getElementById(element);
+        if (!element) {
+            return false;
         }
     }
-    return result;
+    if (element.tagName === "SELECT") {
+        var result = [];
+        var options = select && select.options;
+        var opt;
+
+        for (var i = 0; i < options.length; i++) {
+            opt = options[i];
+
+            if (opt.selected) {
+                result.push(opt.value || opt.text);
+            }
+        }
+        return result;
+    } else if (element.tagName) {
+        return element.value || document.getElementById(element.id + "LastInput").value;
+    }
+    return false;
 }

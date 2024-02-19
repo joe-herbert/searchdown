@@ -42,3 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
         inputName: "multipleAddValue",
     });
 });
+
+function formSubmit(form) {
+    document.getElementById("formResult").innerHTML =
+        "Basic: " + sdGetValue(form.basic) + "<br>Multiple: " + sdGetValue(form.multiple) + "<br>AddValue: " + sdGetValue(form.addValue) + "<br>MultipleAddValue: " + sdGetValue(form.multipleAddValue);
+}
