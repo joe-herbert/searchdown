@@ -25,7 +25,7 @@ function searchdown(elementId, options) {
             inputName: "sd" + sdGlobalCount++,
         };
     } else {
-        if (options.value === undefined || !Array.isArray(options.values)) options.values = [];
+        if (options.values === undefined || !Array.isArray(options.values)) options.values = [];
         if (options.sort !== undefined && options.sort !== "ASC" && options.sort !== "DESC") options.sort = undefined;
         if (options.limit === undefined || isNaN(options.limit)) options.limit = 0;
         if (options.multiple === undefined || typeof options.multiple !== "boolean") options.multiple = false;
