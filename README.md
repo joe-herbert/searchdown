@@ -36,6 +36,7 @@ The default options are:
         addValues: true,
         saveEntered: true,
         hideEntered: true,
+        allowDuplicates: false,
         caseSensitive: false,
         placeholder: "Search",
         maxHeight: 600,

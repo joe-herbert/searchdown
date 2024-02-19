@@ -18,28 +18,25 @@ function searchdown(elementId, options) {
             addValues: true,
             saveEntered: true,
             hideEntered: true,
+            allowDuplicates: false,
             caseSensitive: false,
             placeholder: "Search",
             maxHeight: 600,
             inputName: "sd" + sdGlobalCount++,
         };
     } else {
-        if (!Array.isArray(options.values)) options.values = [];
+        if (options.value === undefined || !Array.isArray(options.values)) options.values = [];
         if (options.sort !== undefined && options.sort !== "ASC" && options.sort !== "DESC") options.sort = undefined;
         if (options.limit === undefined || isNaN(options.limit)) options.limit = 0;
         if (options.multiple === undefined || typeof options.multiple !== "boolean") options.multiple = false;
         if (options.addValues === undefined || typeof options.addValues !== "boolean") options.addValues = true;
         if (options.saveEntered === undefined || typeof options.saveEntered !== "boolean") options.saveEntered = true;
         if (options.hideEntered === undefined || typeof options.hideEntered !== "boolean") options.hideEntered = true;
+        if (options.allowDuplicates === undefined || typeof options.allowDuplicates !== "boolean") options.allowDuplicates = false;
         if (options.caseSensitive === undefined || typeof options.caseSensitive !== "boolean") options.caseSensitive = false;
         if (options.placeholder === undefined) options.placeholder = "Search";
         if (options.maxHeight === undefined || isNaN(options.maxHeight)) options.maxHeight = 600;
         if (options.inputName === undefined || options.inputName === "") options.inputName = "sd" + sdGlobalCount++;
-    }
-    //error checking
-    if (!options.values && !options.addValues) {
-        console.error(`No valid values provided for searchdown with id ${elementId}`);
-        return false;
     }
     //set colours
     if (options.baseBackColor) {
@@ -175,16 +172,6 @@ function searchdown(elementId, options) {
         let target = event.currentTarget;
         let targetValue = target.value;
         sdSearchAndShowDropdown(options, target, targetValue);
-        let searchdown = target.closest(".searchdown");
-        let dropdownWrapper = searchdown.querySelector(".sdDropdownWrapper");
-        let maxHeight = document.querySelector("body").getBoundingClientRect().bottom - searchdown.getBoundingClientRect().bottom;
-        if (maxHeight < 80) {
-            dropdownWrapper.classList.add("sdTop");
-            dropdownWrapper.style.maxHeight = Math.min(searchdown.getBoundingClientRect().top - document.querySelector("body").getBoundingClientRect().top, options.maxHeight) + "px";
-        } else {
-            dropdownWrapper.style.maxHeight = Math.min(document.querySelector("body").getBoundingClientRect().bottom - searchdown.getBoundingClientRect().bottom, options.maxHeight) + "px";
-        }
-        dropdownWrapper.classList.remove("sdHide");
     });
 
     inputWrapper.appendChild(enteredWrapper);
@@ -235,24 +222,26 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     if (!options.multiple && entered) {
         entered.innerHTML = value;
     } else {
-        let entered = document.createElement("span");
-        entered.classList.add("sdEntered");
-        entered.innerHTML = value;
-        entered.addEventListener("click", (event) => {
-            event.target.remove();
-            //Remove value from enteredInput
-            let enteredInput = searchdown.querySelector(".sdEnteredInput");
-            if (options.multiple) {
-                enteredInput.querySelectorAll("option").forEach((opt) => {
-                    if (opt.value === lastEntered.innerHTML) {
-                        opt.remove();
-                    }
-                });
-            } else {
-                enteredInput.value = "";
-            }
-        });
-        enteredWrapper.appendChild(entered);
+        if (options.allowDuplicates || !sdEnteredContainsValue(enteredWrapper, value, options.caseSensitive)) {
+            let entered = document.createElement("span");
+            entered.classList.add("sdEntered");
+            entered.innerHTML = value;
+            entered.addEventListener("click", (event) => {
+                event.target.remove();
+                //Remove value from enteredInput
+                let enteredInput = searchdown.querySelector(".sdEnteredInput");
+                if (options.multiple) {
+                    enteredInput.querySelectorAll("option").forEach((opt) => {
+                        if (opt.value === lastEntered.innerHTML) {
+                            opt.remove();
+                        }
+                    });
+                } else {
+                    enteredInput.value = "";
+                }
+            });
+            enteredWrapper.appendChild(entered);
+        }
     }
     let input = searchdown.querySelector(".sdInput");
     if (clearInput) {
@@ -272,70 +261,84 @@ function sdAddEntered(options, searchdown, value, clearInput) {
 }
 
 function sdSearchAndShowDropdown(options, target, targetValue) {
-    let enteredWrapper = target.closest(".searchdown").querySelector(".sdEnteredWrapper");
-    //filter values
-    let filteredValues = options.values.filter((value) => {
-        if (options.hideEntered && sdEnteredContainsValue(enteredWrapper, value, options.caseSensitive)) {
-            return false;
-        }
-        //if caseSensitive
-        if (options.caseSensitive) {
-            return value.includes(targetValue);
-        }
-        return value.toLowerCase().includes(targetValue.toLowerCase());
-    });
-    //apply sort
-    if (options.sort === "ASC") filteredValues.sort();
-    else if (options.sort === "DESC") filteredValues.sort().reverse();
-    //apply limit
-    if (options.limit !== 0) filteredValues = filteredValues.slice(0, options.limit);
-    //remove all existing options
-    let dropdown = target.closest(".searchdown").querySelector(".sdDropdown");
-    dropdown.querySelectorAll("li.sdOption:not(.sdAddOption)").forEach((li) => {
-        li.remove();
-    });
-    //create option for each value
-    let first = true;
-    for (let value of filteredValues) {
-        let opt = document.createElement("li");
-        opt.classList.add("sdOption");
-        if (first) {
-            opt.classList.add("sdSelected");
-            first = false;
-        }
-        opt.innerHTML = value;
-        opt.addEventListener("click", (event) => {
-            if (value !== "") {
-                sdAddEntered(options, event.target.closest(".searchdown"), event.target.innerHTML, false);
+    if (options.values.length !== 0 || options.addValues) {
+        let searchdown = target.closest(".searchdown");
+        let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
+        //filter values
+        let filteredValues = options.values.filter((value) => {
+            if (options.hideEntered && sdEnteredContainsValue(enteredWrapper, value, options.caseSensitive)) {
+                return false;
             }
+            //if caseSensitive
+            if (options.caseSensitive) {
+                return value.includes(targetValue);
+            }
+            return value.toLowerCase().includes(targetValue.toLowerCase());
         });
-        dropdown.appendChild(opt);
-    }
-    let sdAddOption = dropdown.querySelector("li.sdAddOption");
-    if (sdAddOption) {
-        if (filteredValues.length === 0) {
-            sdAddOption.classList.add("sdSelected");
-        } else {
-            sdAddOption.classList.remove("sdSelected");
-        }
-    }
-    if (options.values.includes(targetValue)) {
-        if (sdAddOption) {
-            sdAddOption.classList.add("sdHide");
-        }
-    } else {
-        if (sdAddOption) {
-            dropdown.appendChild(sdAddOption);
-            sdAddOption.classList.remove("sdHide");
-        }
-        if (options.addValues) {
-            let message = `Click to add <b>"${targetValue}"</b>`;
-            if (targetValue === "") {
-                message = "Type to enter custom value";
+        //apply sort
+        if (options.sort === "ASC") filteredValues.sort();
+        else if (options.sort === "DESC") filteredValues.sort().reverse();
+        //apply limit
+        if (options.limit !== 0) filteredValues = filteredValues.slice(0, options.limit);
+        //remove all existing options
+        let dropdown = searchdown.querySelector(".sdDropdown");
+        dropdown.querySelectorAll("li.sdOption:not(.sdAddOption)").forEach((li) => {
+            li.remove();
+        });
+        //create option for each value
+        let first = true;
+        for (let value of filteredValues) {
+            let opt = document.createElement("li");
+            opt.classList.add("sdOption");
+            if (first) {
+                opt.classList.add("sdSelected");
+                first = false;
             }
-            dropdown.querySelector("li.sdAddOption").classList.remove("sdHide");
-            dropdown.querySelector("li.sdAddOption").innerHTML = message;
+            opt.innerHTML = value;
+            opt.addEventListener("click", (event) => {
+                if (value !== "") {
+                    sdAddEntered(options, event.target.closest(".searchdown"), event.target.innerHTML, false);
+                }
+            });
+            dropdown.appendChild(opt);
         }
+        let sdAddOption = dropdown.querySelector("li.sdAddOption");
+        if (sdAddOption) {
+            if (filteredValues.length === 0) {
+                sdAddOption.classList.add("sdSelected");
+            } else {
+                sdAddOption.classList.remove("sdSelected");
+            }
+        }
+        if (options.values.includes(targetValue)) {
+            if (sdAddOption) {
+                sdAddOption.classList.add("sdHide");
+            }
+        } else {
+            if (sdAddOption) {
+                dropdown.appendChild(sdAddOption);
+                sdAddOption.classList.remove("sdHide");
+            }
+            if (options.addValues) {
+                let message = `Press Enter to add <b>"${targetValue}"</b>`;
+                if (targetValue === "") {
+                    message = "Type to enter a new value";
+                }
+                dropdown.querySelector("li.sdAddOption").classList.remove("sdHide");
+                dropdown.querySelector("li.sdAddOption").innerHTML = message;
+            }
+        }
+        //show dropdown
+        let dropdownWrapper = searchdown.querySelector(".sdDropdownWrapper");
+        let maxHeight = document.querySelector("body").getBoundingClientRect().bottom - searchdown.getBoundingClientRect().bottom;
+        if (maxHeight < 80) {
+            dropdownWrapper.classList.add("sdTop");
+            dropdownWrapper.style.maxHeight = Math.min(searchdown.getBoundingClientRect().top - document.querySelector("body").getBoundingClientRect().top, options.maxHeight) + "px";
+        } else {
+            dropdownWrapper.style.maxHeight = Math.min(document.querySelector("body").getBoundingClientRect().bottom - searchdown.getBoundingClientRect().bottom, options.maxHeight) + "px";
+        }
+        dropdownWrapper.style.width = searchdown.getBoundingClientRect().width + "px";
+        dropdownWrapper.classList.remove("sdHide");
     }
 }
 

@@ -40,7 +40,7 @@
     overflow-x: visible;
     font: inherit;
     display: inline;
-    word-break: break-all;
+    word-break: break-word;
     max-width: 100%;
 }
 .sdEnteredWrapper {
