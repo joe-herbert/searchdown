@@ -162,6 +162,9 @@ function searchdown(elementId, options) {
             sdSearchAndShowDropdown(options, target, "");
         } else if (event.key === "Tab") {
             sdLoseFocus();
+        } else if (event.key === "Escape") {
+            sdLoseFocus();
+            target.blur();
         } else if (alphanumeric || event.key === "Backspace") {
             sdSearchAndShowDropdown(options, target, targetValue);
         }
