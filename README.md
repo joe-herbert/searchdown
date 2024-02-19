@@ -11,7 +11,7 @@ Add the CSS in the page `head`.
 Add the JS to the bottom of the page `body`.
 
     <script src="<path-to>searchdown.js"></script>
-Call `searchdown(id, options);`, e.g.
+Call `searchdown(id, options);` (must be done after including the js file), e.g.
 
     document.addEventListener("DOMContentLoaded", () => {
         searchdown("my-dropdown", {
