@@ -16,8 +16,7 @@ Call `searchdown(id, options);`, e.g.
     document.addEventListener("DOMContentLoaded", () => {
         searchdown("my-dropdown", {
             values: ["France", "England", "Spain", "Wales", "Ireland", "Germany", "Portugal", "Italy"],
-            sort: undefined, //undefined, "ASC", "DESC"
-            limit: 0, //0 means no limit and is default
+            sort: "ASC",
             multiple: true,
             caseSensitive: true,
             placeholder: "Choose your item",
@@ -58,4 +57,6 @@ The layout of a searchdown field is shown below. You can use the classes to styl
                 span.sdEntered
             input.sdInput
         div.sdDropdownWrapper
-            div.sdDropdown
+            ul.sdDropdown
+                li.sdOption
+                li.sdAddOption //only if addValues is true
