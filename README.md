@@ -1,6 +1,8 @@
 # searchdown
 A lightweight JS library to provide a searchable dropdown input field.
 
+[Here's a demo](https://joe-herbert.github.io/searchdown/example.html)
+
 ## Usage
 Download `searchdown.js` and `searchdown.css`.  
 Add the CSS in the page `head`.
