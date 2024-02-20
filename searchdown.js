@@ -193,7 +193,7 @@ function sdResizeInput(input, key) {
     if ((input.value === "" || (input.value.length === 1 && key === "Backspace")) && input.placeholder !== "") {
         let span = document.createElement("span");
         span.innerHTML = input.placeholder;
-        input.closest(".searchdown").appendChild(span);
+        document.querySelector("body").appendChild(span);
         input.style.width = span.scrollWidth + "px";
         span.remove();
     } else {
