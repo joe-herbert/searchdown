@@ -47,6 +47,7 @@ The default options are:
         placeholder: "Search",
         maxHeight: 600,
         inputName: "sd<incrementing-value>",
+        initialValues: [],
         baseBackColor: "#b1d3f7",
         selectedBackColor: "#90a0c3",
         hoverBackColor: "#8ab7d9",

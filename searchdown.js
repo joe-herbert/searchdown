@@ -23,6 +23,7 @@ function searchdown(elementId, options) {
             placeholder: "Search",
             maxHeight: 600,
             inputName: "sd" + sdGlobalCount++,
+            initialValues: [],
         };
     } else {
         if (options.values === undefined || !Array.isArray(options.values)) options.values = [];
@@ -37,6 +38,7 @@ function searchdown(elementId, options) {
         if (options.placeholder === undefined) options.placeholder = "Search";
         if (options.maxHeight === undefined || isNaN(options.maxHeight)) options.maxHeight = 600;
         if (options.inputName === undefined || options.inputName === "") options.inputName = "sd" + sdGlobalCount++;
+        if (options.initialValues === undefined || !Array.isArray(options.initialValues)) options.initialValues = [];
     }
     //set colours
     if (options.baseBackColor) {
@@ -181,6 +183,13 @@ function searchdown(elementId, options) {
     element.appendChild(dropdownWrapper);
     element.appendChild(enteredInput);
     sdResizeInput(input, "");
+    if (options.multiple) {
+        for (let val of options.initialValues) {
+            sdAddEntered(options, element, val, true);
+        }
+    } else {
+        sdAddEntered(options, element, options.initialValues[0], true);
+    }
 }
 
 document.addEventListener("click", (event) => {
