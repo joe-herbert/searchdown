@@ -78,7 +78,7 @@ function searchdown(elementId, options) {
     enteredInput.classList.add("sdHide");
     enteredInput.classList.add("sdEnteredInput");
     enteredInput.name = options.inputName;
-    enteredInput.id = "sdInput" + options.inputName;
+    enteredInput.id = "sdInput-" + options.inputName;
     let dropdownWrapper = document.createElement("div");
     dropdownWrapper.classList.add("sdDropdownWrapper");
     dropdownWrapper.classList.add("sdHide");
