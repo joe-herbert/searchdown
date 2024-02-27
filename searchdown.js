@@ -189,7 +189,9 @@ function searchdown(elementId, options) {
             sdAddEntered(options, element, val, true);
         }
     } else {
-        sdAddEntered(options, element, options.initialValues[0], true);
+        if (options.initialValues[0]) {
+            sdAddEntered(options, element, options.initialValues[0], true);
+        }
     }
 }
 
