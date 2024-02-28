@@ -39,6 +39,7 @@
     outline: 0;
     overflow-x: visible;
     font: inherit;
+    background-color: inherit;
     display: inline;
     word-break: break-word;
     max-width: 100%;
