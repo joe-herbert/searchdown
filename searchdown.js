@@ -183,7 +183,8 @@ function searchdown(elementId, options) {
     dropdownWrapper.appendChild(dropdown);
     element.appendChild(dropdownWrapper);
     element.appendChild(enteredInput);
-    sdResizeInput(input, "");
+    var computedStyle = getComputedStyle(inputWrapper);
+    input.style.width = inputWrapper.offsetWidth - (parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight)) + "px";
     if (options.multiple) {
         for (let val of options.initialValues) {
             sdAddEntered(options, element, val, true);
