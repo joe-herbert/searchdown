@@ -7,6 +7,7 @@
     --sdTextBase: #000;
     --sdTextSelected: #000;
     --sdTextHover: #000;
+    --sdInput: #000;
 }
 .searchdown,
 .sdInputWrapper,
@@ -44,6 +45,7 @@
     display: inline;
     word-break: break-word;
     max-width: 100%;
+    color: var(--sdInput);
 }
 .sdEnteredWrapper {
     display: inline;
