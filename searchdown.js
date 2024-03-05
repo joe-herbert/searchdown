@@ -24,6 +24,7 @@ function searchdown(elementId, options) {
             maxHeight: 600,
             inputName: "sd" + sdGlobalCount++,
             initialValues: [],
+            simpleInput: false,
         };
     } else {
         if (options.values === undefined || !Array.isArray(options.values)) options.values = [];
@@ -39,6 +40,7 @@ function searchdown(elementId, options) {
         if (options.maxHeight === undefined || isNaN(options.maxHeight)) options.maxHeight = 600;
         if (options.inputName === undefined || options.inputName === "") options.inputName = "sd" + sdGlobalCount++;
         if (options.initialValues === undefined || !Array.isArray(options.initialValues)) options.initialValues = [];
+        if (options.simpleInput === undefined || typeof options.simpleInput !== "boolean") options.simpleInput = false;
     }
     //set colours
     if (options.baseBackColor) {
@@ -86,7 +88,7 @@ function searchdown(elementId, options) {
     dropdown.classList.add("sdDropdown");
     let enteredWrapper = document.createElement("div");
     enteredWrapper.classList.add("sdEnteredWrapper");
-    if (options.addValues) {
+    if (options.addValues && !options.simpleInput) {
         let addOption = document.createElement("li");
         addOption.classList.add("sdAddOption");
         addOption.addEventListener("click", (event) => {
@@ -168,7 +170,7 @@ function searchdown(elementId, options) {
         } else if (alphanumeric || event.key === "Backspace") {
             sdSearchAndShowDropdown(options, target, targetValue);
         }
-        sdResizeInput(target, event.key);
+        sdResizeInput(target, event.key, options.simpleInput);
     });
 
     input.addEventListener("focus", (event) => {
@@ -183,6 +185,9 @@ function searchdown(elementId, options) {
     dropdownWrapper.appendChild(dropdown);
     element.appendChild(dropdownWrapper);
     element.appendChild(enteredInput);
+
+    element.dataset.options = JSON.stringify(options);
+
     var computedStyle = getComputedStyle(inputWrapper);
     input.style.width = inputWrapper.offsetWidth - (parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight)) + "px";
     if (options.multiple) {
@@ -201,16 +206,20 @@ document.addEventListener("click", (event) => {
     event.stopPropagation();
 });
 
-function sdResizeInput(input, key) {
-    input.style.width = 0;
-    if ((input.value === "" || (input.value.length === 1 && key === "Backspace")) && input.placeholder !== "") {
-        let span = document.createElement("span");
-        span.innerHTML = input.placeholder;
-        document.querySelector("body").appendChild(span);
-        input.style.width = span.scrollWidth + "px";
-        span.remove();
+function sdResizeInput(input, key, simpleInput) {
+    if (simpleInput) {
+        input.style.width = "100%";
     } else {
-        input.style.width = input.scrollWidth + 12 + "px";
+        input.style.width = 0;
+        if ((input.value === "" || (input.value.length === 1 && key === "Backspace")) && input.placeholder !== "") {
+            let span = document.createElement("span");
+            span.innerHTML = input.placeholder;
+            document.querySelector("body").appendChild(span);
+            input.style.width = span.scrollWidth + "px";
+            span.remove();
+        } else {
+            input.style.width = input.scrollWidth + 12 + "px";
+        }
     }
 }
 
@@ -234,18 +243,19 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     let entered = enteredWrapper.querySelector(".sdEntered");
     if (!options.multiple && entered) {
         entered.innerHTML = value;
-    } else {
+    } else if (!options.simpleInput) {
         if (options.allowDuplicates || !sdEnteredContainsValue(enteredWrapper, value, options.caseSensitive)) {
             let entered = document.createElement("span");
             entered.classList.add("sdEntered");
             entered.innerHTML = value;
             entered.addEventListener("click", (event) => {
+                const valToRemove = event.target.innerHTML;
                 event.target.remove();
                 //Remove value from enteredInput
                 let enteredInput = searchdown.querySelector(".sdEnteredInput");
                 if (options.multiple) {
                     enteredInput.querySelectorAll("option").forEach((opt) => {
-                        if (opt.value === lastEntered.innerHTML) {
+                        if (opt.value === valToRemove) {
                             opt.remove();
                         }
                     });
@@ -260,7 +270,7 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     if (clearInput) {
         input.value = "";
     }
-    sdResizeInput(input, "");
+    sdResizeInput(input, "", options.simpleInput);
     //Add value to enteredInput
     let enteredInput = searchdown.querySelector(".sdEnteredInput");
     if (options.multiple) {
@@ -374,12 +384,14 @@ function sdGetValue(element, includeNotEntered) {
             return false;
         }
     }
+    let options = JSON.parse(element.closest(".searchdown").dataset.options);
+    if (options.simpleInput) includeNotEntered = true;
     if (element.tagName === "SELECT") {
-        var result = [];
-        var options = element && element.options;
-        var opt;
+        let result = [];
+        let options = element && element.options;
+        let opt;
 
-        for (var i = 0; i < options.length; i++) {
+        for (let i = 0; i < options.length; i++) {
             opt = options[i];
 
             if (opt.selected) {
@@ -403,5 +415,33 @@ function sdGetValue(element, includeNotEntered) {
             }
         }
     }
+    return false;
+}
+
+function sdSetValue(element, values) {
+    if (typeof element === "string") {
+        element = document.getElementById(element);
+        if (!element) {
+            return false;
+        }
+    }
+    if (typeof values === "string") {
+        values = [values];
+    }
+    let searchdown = element.closest(".searchdown");
+    //remove current values
+    searchdown.querySelector(".sdEnteredWrapper").innerHTML = "";
+    if (element.tagName === "SELECT") {
+        let opts = element.options;
+        for (let i = 0; i < opts.length; i++) {
+            opts[i].remove();
+        }
+    } else if (element.tagName) {
+        element.value = "";
+    }
+    //add new values
+    values.forEach((value) => {
+        sdAddEntered(JSON.parse(searchdown.dataset.options), searchdown, value, false);
+    });
     return false;
 }

@@ -48,6 +48,7 @@ The default options are:
         maxHeight: 600,
         inputName: "sd<incrementing-value>",
         initialValues: [],
+        simpleInput: false,
         baseBackColor: "#b1d3f7",
         selectedBackColor: "#90a0c3",
         hoverBackColor: "#8ab7d9",
