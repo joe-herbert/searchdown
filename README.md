@@ -49,6 +49,7 @@ The default options are:
         inputName: "sd<incrementing-value>",
         initialValues: [],
         simpleInput: false,
+        textarea: false,
         baseBackColor: "#b1d3f7",
         selectedBackColor: "#90a0c3",
         hoverBackColor: "#8ab7d9",

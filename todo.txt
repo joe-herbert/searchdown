@@ -1,1 +1,2 @@
 Add required option including valid function
+Max input length option

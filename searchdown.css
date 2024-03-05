@@ -88,6 +88,9 @@
     background: var(--sdBackBase);
     transform: translateY(-1px);
 }
+.sdDropdownWrapper:not(:has(li)) {
+    display: none;
+}
 .sdDropdownWrapper.sdTop {
     transform: translate(0, calc(-100% - 51px));
 }
@@ -129,4 +132,17 @@
 }
 .sdHide {
     display: none;
+}
+.searchdown.textarea {
+    width: auto;
+}
+.searchdown.textarea .sdInput {
+    max-width: none;
+}
+.searchdown.textarea .sdDropdownWrapper {
+    border: 0;
+    display: none;
+}
+.searchdown.textarea .sdInputWrapper {
+    display: inline-block;
 }

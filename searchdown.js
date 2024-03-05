@@ -7,7 +7,6 @@ function searchdown(elementId, options) {
         console.error(`No element found for searchdown with id ${elementId}`);
         return false;
     }
-    element.classList.add("searchdown");
     //set default values
     if (!options) {
         options = {
@@ -25,6 +24,7 @@ function searchdown(elementId, options) {
             inputName: "sd" + sdGlobalCount++,
             initialValues: [],
             simpleInput: false,
+            textarea: false,
         };
     } else {
         if (options.values === undefined || !Array.isArray(options.values)) options.values = [];
@@ -41,6 +41,7 @@ function searchdown(elementId, options) {
         if (options.inputName === undefined || options.inputName === "") options.inputName = "sd" + sdGlobalCount++;
         if (options.initialValues === undefined || !Array.isArray(options.initialValues)) options.initialValues = [];
         if (options.simpleInput === undefined || typeof options.simpleInput !== "boolean") options.simpleInput = false;
+        if (options.textarea === undefined || typeof options.textarea !== "boolean") options.textarea = false;
     }
     //set colours
     if (options.baseBackColor) {
@@ -61,10 +62,15 @@ function searchdown(elementId, options) {
     if (options.hoverTextColor) {
         element.style.setProperty("--sdTextHover", options.hoverTextColor);
     }
+    //searchdown class
+    element.classList.add("searchdown");
+    if (options.textarea) {
+        element.classList.add("textarea");
+    }
     //create searchdown html
     let inputWrapper = document.createElement("div");
     inputWrapper.classList.add("sdInputWrapper");
-    let input = document.createElement("input");
+    let input = document.createElement(options.textarea ? "textarea" : "input");
     input.placeholder = options.placeholder;
     input.classList.add("sdInput");
     input.name = options.inputName + "LastInput";
@@ -170,7 +176,7 @@ function searchdown(elementId, options) {
         } else if (alphanumeric || event.key === "Backspace") {
             sdSearchAndShowDropdown(options, target, targetValue);
         }
-        sdResizeInput(target, event.key, options.simpleInput);
+        sdResizeInput(target, event.key, options.simpleInput, options.textarea);
     });
 
     input.addEventListener("focus", (event) => {
@@ -188,8 +194,16 @@ function searchdown(elementId, options) {
 
     element.dataset.options = JSON.stringify(options);
 
-    var computedStyle = getComputedStyle(inputWrapper);
-    input.style.width = inputWrapper.offsetWidth - (parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight)) + "px";
+    if (options.simpleInput) {
+        if (options.textarea) {
+            input.style.width = "280px";
+        } else {
+            input.style.width = "100%";
+        }
+    } else {
+        var computedStyle = getComputedStyle(inputWrapper);
+        input.style.width = inputWrapper.offsetWidth - (parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight)) + "px";
+    }
     if (options.multiple) {
         for (let val of options.initialValues) {
             sdAddEntered(options, element, val, true);
@@ -206,9 +220,13 @@ document.addEventListener("click", (event) => {
     event.stopPropagation();
 });
 
-function sdResizeInput(input, key, simpleInput) {
+function sdResizeInput(input, key, simpleInput, textarea) {
     if (simpleInput) {
-        input.style.width = "100%";
+        if (textarea) {
+            input.style.width = "280px";
+        } else {
+            input.style.width = "100%";
+        }
     } else {
         input.style.width = 0;
         if ((input.value === "" || (input.value.length === 1 && key === "Backspace")) && input.placeholder !== "") {
@@ -270,7 +288,7 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     if (clearInput) {
         input.value = "";
     }
-    sdResizeInput(input, "", options.simpleInput);
+    sdResizeInput(input, "", options.simpleInput, options.textarea);
     //Add value to enteredInput
     let enteredInput = searchdown.querySelector(".sdEnteredInput");
     if (options.multiple) {
@@ -342,7 +360,7 @@ function sdSearchAndShowDropdown(options, target, targetValue) {
                 dropdown.appendChild(sdAddOption);
                 sdAddOption.classList.remove("sdHide");
             }
-            if (options.addValues) {
+            if (options.addValues && !options.simpleInput) {
                 let message = `Press Enter to add <b>"${targetValue}"</b>`;
                 if (targetValue === "") {
                     message = "Type to enter a new value";
