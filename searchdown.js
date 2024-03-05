@@ -206,11 +206,11 @@ function searchdown(elementId, options) {
     }
     if (options.multiple) {
         for (let val of options.initialValues) {
-            sdAddEntered(options, element, val, true);
+            sdAddEntered(options, element, val, false);
         }
     } else {
         if (options.initialValues[0]) {
-            sdAddEntered(options, element, options.initialValues[0], true);
+            sdAddEntered(options, element, options.initialValues[0], false);
         }
     }
 }
@@ -259,9 +259,12 @@ function sdLoseFocus(searchdown) {
 function sdAddEntered(options, searchdown, value, clearInput) {
     let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
     let entered = enteredWrapper.querySelector(".sdEntered");
+    let input = searchdown.querySelector(".sdInput");
     if (!options.multiple && entered) {
         entered.innerHTML = value;
-    } else if (!options.simpleInput) {
+    } else if (options.simpleInput) {
+        input.value = value;
+    } else {
         if (options.allowDuplicates || !sdEnteredContainsValue(enteredWrapper, value, options.caseSensitive)) {
             let entered = document.createElement("span");
             entered.classList.add("sdEntered");
@@ -284,11 +287,10 @@ function sdAddEntered(options, searchdown, value, clearInput) {
             enteredWrapper.appendChild(entered);
         }
     }
-    let input = searchdown.querySelector(".sdInput");
     if (clearInput) {
         input.value = "";
     }
-    sdResizeInput(input, "", options.simpleInput, options.textarea);
+    sdResizeInput(input, input.value, options.simpleInput, options.textarea);
     //Add value to enteredInput
     let enteredInput = searchdown.querySelector(".sdEnteredInput");
     if (options.multiple) {
