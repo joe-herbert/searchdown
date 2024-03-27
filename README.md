@@ -1,3 +1,5 @@
+<img src="logo.png" width="300px"/>
+
 # searchdown
 
 A lightweight JS library to provide a searchable dropdown input field.
