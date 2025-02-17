@@ -1,11 +1,13 @@
 let sdGlobalCount = 0;
 
-function searchdown(elementId, options) {
+function searchdown(element, options) {
     //check element exists
-    const element = document.getElementById(elementId);
-    if (!element) {
-        console.error(`No element found for searchdown with id ${elementId}`);
-        return false;
+    if (typeof element === "string") {
+        element = document.getElementById(element);
+        if (!element) {
+            console.error(`No element found for searchdown with id ${element}`);
+            return false;
+        }
     }
     //set default values
     if (!options) {
