@@ -17,7 +17,7 @@ Add the JS to the bottom of the page `body` (or wherever else you prefer).
 
     <script src="<path-to>searchdown.js"></script>
 
-Call `searchdown(id, options);` (must be done after including the js file), e.g.
+Call `searchdown(element, options);` (must be done after including the js file). `element` can be the HTML element or an element's id, e.g.
 
     document.addEventListener("DOMContentLoaded", () => {
         searchdown("my-dropdown", {
