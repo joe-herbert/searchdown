@@ -1,3 +1,5 @@
+<img src="logo.png" width="300px"/>
+
 # searchdown
 
 A lightweight JS library to provide a searchable dropdown input field.
@@ -6,12 +8,12 @@ A lightweight JS library to provide a searchable dropdown input field.
 
 ## Usage
 
-Download `searchdown.js` and `searchdown.css`.  
+Download `searchdown.js` and `searchdown.css` or the minified versions.  
 Add the CSS in the page `head`.
 
     <link rel="stylesheet" href="<path-to>searchdown.css">
 
-Add the JS to the bottom of the page `body`.
+Add the JS to the bottom of the page `body` (or wherever else you prefer).
 
     <script src="<path-to>searchdown.js"></script>
 
