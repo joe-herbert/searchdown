@@ -4,6 +4,8 @@
 
 A lightweight JS library to provide a searchable dropdown input field.
 
+Provides a range of options and works seamlessly with large datasets.
+
 [Here's a demo](https://joe-herbert.github.io/searchdown/example.html)
 
 ## Usage

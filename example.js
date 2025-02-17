@@ -41,6 +41,17 @@ document.addEventListener("DOMContentLoaded", () => {
         saveEntered: false,
         inputName: "multipleAddValue",
     });
+    searchdown("largeValue", {
+        values: cityNames,
+        sort: undefined, //undefined, "ASC", "DESC"
+        limit: 0, //0 means no limit and is default
+        multiple: false,
+        addValues: true,
+        caseSensitive: false,
+        placeholder: "Search",
+        saveEntered: false,
+        inputName: "largeValue",
+    });
 });
 
 function formSubmit(form) {
@@ -49,8 +60,10 @@ function formSubmit(form) {
         sdGetValue(form.basic, true) +
         "<br>Multiple: " +
         sdGetValue(form.multiple, true) +
-        "<br>AddValue: " +
+        "<br>Add Value: " +
         sdGetValue(form.addValue, false) +
-        "<br>MultipleAddValue: " +
-        sdGetValue(form.multipleAddValue, false);
+        "<br>Multiple Add Value: " +
+        sdGetValue(form.multipleAddValue, false) +
+        "<br>20,000 Options Value: " +
+        sdGetValue(form.largeValue, false);
 }
