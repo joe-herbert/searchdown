@@ -84,6 +84,7 @@ function searchdown(element, options) {
     inputWrapper.classList.add("sdInputWrapper");
     let input = document.createElement(options.textarea ? "textarea" : "input");
     input.placeholder = options.placeholder;
+    input.autocomplete = "off";
     input.classList.add("sdInput");
     input.name = options.inputName + "LastInput";
     //create input or select
@@ -113,7 +114,7 @@ function searchdown(element, options) {
             let searchdown = event.target.closest(".searchdown");
             let value = searchdown.querySelector(".sdInput").value;
             if (value !== "") {
-                sdAddEntered(options, searchdown, value, true);
+                sdAddEntered(options, searchdown, value, !options.simpleInput);
                 if (options.saveEntered) {
                     options.values.push(value);
                 }
@@ -144,7 +145,9 @@ function searchdown(element, options) {
             }
             if (targetValue !== "" || !selected.classList.contains("sdAddOption")) {
                 sdAddEntered(options, searchdown, value, !options.simpleInput);
-                sdSearchAndShowDropdown(options, target, "");
+                if (options.multiple) {
+                    sdSearchAndShowDropdown(options, target, options.simpleInput ? value : "");
+                }
             }
             event.preventDefault();
         } else if (event.key === "Down" || event.key === "ArrowDown") {
@@ -260,7 +263,9 @@ function sdLoseFocus(searchdown) {
                 sd.querySelector(".sdDropdownWrapper").classList.add("sdHide");
             }
         });
-        searchdown.querySelector(".sdInput").focus();
+        if (JSON.parse(searchdown.dataset.options).multiple) {
+            searchdown.querySelector(".sdInput").focus();
+        }
     } else {
         document.querySelectorAll(".searchdown .sdDropdownWrapper").forEach((sdDropdownWrapper) => {
             sdDropdownWrapper.classList.add("sdHide");
@@ -312,6 +317,9 @@ function sdAddEntered(options, searchdown, value, clearInput) {
         enteredInput.appendChild(opt);
     } else {
         enteredInput.value = value;
+    }
+    if (!options.multiple) {
+        sdLoseFocus();
     }
 }
 
@@ -488,7 +496,7 @@ const parseOptions = ["values", "initialValues"];
 
 // add searchdowns
 document.addEventListener("DOMContentLoaded", () => {
-    if (typeof SEARCHDOWN_AUTO_CREATE === 'undefined' || SEARCHDOWN_AUTO_CREATE !== false) {
+    if (typeof SEARCHDOWN_AUTO_CREATE === "undefined" || SEARCHDOWN_AUTO_CREATE !== false) {
         sdAutoCreate();
     }
 });
