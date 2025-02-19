@@ -44,6 +44,16 @@ function searchdown(element, options) {
         if (options.initialValues === undefined || !Array.isArray(options.initialValues)) options.initialValues = [];
         if (options.simpleInput === undefined || typeof options.simpleInput !== "boolean") options.simpleInput = false;
         if (options.textarea === undefined || typeof options.textarea !== "boolean") options.textarea = false;
+
+        if (options.saveEntered && !options.addValues) {
+            console.error("Searchdown: An element cannot have 'saveEntered = true' without 'addValues = true'. Setting 'saveEntered = false'");
+            options.saveEntered = false;
+        }
+
+        if (options.simpleInput && options.multiple) {
+            console.error("Searchdown: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'simpleInput = false'");
+            options.simpleInput = false;
+        }
     }
     //set colours
     if (options.baseBackColor) {
@@ -96,7 +106,7 @@ function searchdown(element, options) {
     dropdown.classList.add("sdDropdown");
     let enteredWrapper = document.createElement("div");
     enteredWrapper.classList.add("sdEnteredWrapper");
-    if (options.addValues && !options.simpleInput) {
+    if (options.addValues) {
         let addOption = document.createElement("li");
         addOption.classList.add("sdAddOption");
         addOption.addEventListener("click", (event) => {
@@ -364,7 +374,7 @@ function sdSearchAndShowDropdown(options, target, targetValue) {
                 dropdown.appendChild(sdAddOption);
                 sdAddOption.classList.remove("sdHide");
             }
-            if (options.addValues && !options.simpleInput) {
+            if (options.addValues) {
                 let message = `Press Enter to add <b>"${targetValue}"</b>`;
                 if (targetValue === "") {
                     message = "Type to enter a new value";
@@ -434,7 +444,11 @@ function sdGetValue(element, includeNotEntered) {
             let last = document.getElementsByName(element.name + "LastInput")[0];
             if (last && last.value) {
                 return last.value;
+            } else {
+                return "";
             }
+        } else {
+            return "";
         }
     }
     return false;
@@ -474,7 +488,7 @@ const parseOptions = ["values", "initialValues"];
 
 // add searchdowns
 document.addEventListener("DOMContentLoaded", () => {
-    if (SEARCHDOWN_AUTO_CREATE !== false) {
+    if (typeof SEARCHDOWN_AUTO_CREATE === 'undefined' || SEARCHDOWN_AUTO_CREATE !== false) {
         sdAutoCreate();
     }
 });
