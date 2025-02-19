@@ -133,7 +133,7 @@ function searchdown(element, options) {
                 value = targetValue;
             }
             if (targetValue !== "" || !selected.classList.contains("sdAddOption")) {
-                sdAddEntered(options, searchdown, value, true);
+                sdAddEntered(options, searchdown, value, !options.simpleInput);
                 sdSearchAndShowDropdown(options, target, "");
             }
             event.preventDefault();
