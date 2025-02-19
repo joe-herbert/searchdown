@@ -1,3 +1,4 @@
 Add required option including valid function
 Max input length option
 Option to match regardless of accents
+Option to limit the number of elements which can be selected

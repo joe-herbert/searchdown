@@ -40,20 +40,20 @@ The default options are:
 
     {
         values: [],
-        sort: undefined, //undefined, "ASC", "DESC"
-        limit: 0, //0 means no limit
-        multiple: false,
-        addValues: true,
-        saveEntered: true,
-        hideEntered: true,
-        allowDuplicates: false,
-        caseSensitive: false,
+        sort: undefined, //allowed values: undefined (don't sort), "ASC", "DESC"
+        limit: 0, //maximum number of options in the dropdown. 0 means no limit
+        multiple: false, //allow user to select multiple options
+        addValues: true, //allow user to add their own options
+        saveEntered: true, //save any options the user enters into the dropdown options. requires addValues to be true
+        hideEntered: true, //hide any currently selected options from the dropdown options
+        allowDuplicates: false, //allow user to add an option which is already in the dropdown options
+        caseSensitive: false, //show options which match the user's search by case or not
         placeholder: "Search",
-        maxHeight: 600,
-        inputName: "sd<incrementing-value>",
-        initialValues: [],
-        simpleInput: false,
-        textarea: false,
+        maxHeight: 600, //the maximum height of the dropdown in px
+        inputName: "sd<incrementing-value>", //the value for the HTML attribute 'name' of the input
+        initialValues: [], //values which should be selected initially
+        simpleInput: false, //doesn't show the items in selected bubbles, just uses a standard input field. requires multiple to be false
+        textarea: false, //instead of an input, use a textarea for longer text entry
         baseBackColor: "#b1d3f7",
         selectedBackColor: "#90a0c3",
         hoverBackColor: "#8ab7d9",
