@@ -2,3 +2,8 @@ Add required option including valid function
 Max input length option
 Option to match regardless of accents
 Option to limit the number of elements which can be selected
+When using arrow keys to move down/up dropdown, scrollto currently selected (not smooth, just jump)
+When up or down arrow keys are pressed, make sure the dropdown is open
+When deleting an entered option, if dropdown is open then redo filter and showing so that just deleted option is added back to dropdown
+Add color options for sdEntered
+Hovering over a dropdown option should make that option the currently selected one, rather than having both a keyboard and mouse selection which can be confusing for the user
