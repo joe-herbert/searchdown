@@ -82,6 +82,9 @@ function searchdown(element, options) {
     //create searchdown html
     let inputWrapper = document.createElement("div");
     inputWrapper.classList.add("sdInputWrapper");
+    inputWrapper.addEventListener("click", () => {
+        inputWrapper.querySelector(".sdInput").focus();
+    });
     let input = document.createElement(options.textarea ? "textarea" : "input");
     input.placeholder = options.placeholder;
     input.autocomplete = "off";
@@ -300,6 +303,7 @@ function sdAddEntered(options, searchdown, value, clearInput) {
                 } else {
                     enteredInput.value = "";
                 }
+                event.stopPropagation();
             });
             enteredWrapper.appendChild(entered);
         }
