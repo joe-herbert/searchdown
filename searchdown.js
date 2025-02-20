@@ -16,8 +16,8 @@ function searchdown(element, options) {
             sort: undefined, //undefined, "ASC", "DESC"
             limit: 0, //0 means no limit and is default
             multiple: false,
-            addValues: true,
-            saveEntered: true,
+            addValues: false,
+            saveEntered: false,
             hideEntered: true,
             allowDuplicates: false,
             caseSensitive: false,
@@ -33,8 +33,8 @@ function searchdown(element, options) {
         if (options.sort !== undefined && options.sort !== "ASC" && options.sort !== "DESC") options.sort = undefined;
         if (options.limit === undefined || isNaN(options.limit)) options.limit = 0;
         if (options.multiple === undefined || typeof options.multiple !== "boolean") options.multiple = false;
-        if (options.addValues === undefined || typeof options.addValues !== "boolean") options.addValues = true;
-        if (options.saveEntered === undefined || typeof options.saveEntered !== "boolean") options.saveEntered = true;
+        if (options.addValues === undefined || typeof options.addValues !== "boolean") options.addValues = false;
+        if (options.saveEntered === undefined || typeof options.saveEntered !== "boolean") options.saveEntered = options.addValues; //defaults to true but only when addValues is enabled
         if (options.hideEntered === undefined || typeof options.hideEntered !== "boolean") options.hideEntered = true;
         if (options.allowDuplicates === undefined || typeof options.allowDuplicates !== "boolean") options.allowDuplicates = false;
         if (options.caseSensitive === undefined || typeof options.caseSensitive !== "boolean") options.caseSensitive = false;
