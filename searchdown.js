@@ -505,14 +505,14 @@ function sdAutoCreate() {
     let sds = document.querySelectorAll(".searchdown");
     sds.forEach((sd) => {
         let opts = {};
-        sd.dataset
+        Object.keys(sd.dataset)
             .filter((option) => option.substring(0, 3) === "sd_")
             .forEach((option) => {
                 option = option.substring(3);
                 if (booleanOptions.includes(option)) opts[option] = sd.dataset[option] === "false" ? false : true;
-                else if (numericalOptions.includes(option)) opts[option] = Number(sd.dataset[option]) || undefined;
-                else if (parseOptions.includes(option)) opts[option] = JSON.parse(sd.dataset[option]) || undefined;
-                opts[option] = sd.dataset[option];
+                else if (numericalOptions.includes(option)) opts[option] = Number(sd.dataset["sd_" + option]) || undefined;
+                else if (parseOptions.includes(option)) opts[option] = JSON.parse(sd.dataset["sd_" + option]) || undefined;
+                else opts[option] = sd.dataset[option];
             });
         if (!opts.hasOwnProperty("values")) {
             console.warning("Searchdown: element must have attribute 'data-sd_values' to be automatically created", element);
