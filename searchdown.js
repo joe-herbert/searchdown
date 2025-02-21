@@ -1,4 +1,89 @@
 let sdGlobalCount = 0;
+const sdOptions = {
+    values: {
+        default: [],
+        type: "array",
+        valid: (value) => {
+            return Array.isArray(value) && value.length > 0;
+        },
+    },
+    sort: {
+        default: undefined,
+        type: "string",
+        valid: (value) => {
+            return value === undefined || value === "ASC" || value === "DESC";
+        },
+    },
+    limit: {
+        default: 0,
+        type: "number",
+        valid: (value) => {
+            let n = Number(value);
+            return n && n >= 0;
+        },
+    },
+    multiple: {
+        default: false,
+        type: "boolean",
+    },
+    addValues: {
+        default: false,
+        type: "boolean",
+    },
+    saveEntered: {
+        default: true,
+        type: "boolean",
+        valid: (value, options) => {
+            return options.addValues || !value;
+        },
+    },
+    hideEntered: {
+        default: true,
+        type: "boolean",
+    },
+    allowDuplicates: {
+        default: false,
+        type: "boolean",
+    },
+    caseSensitive: {
+        default: false,
+        type: "boolean",
+    },
+    placeholder: {
+        default: "Search",
+        type: "string",
+    },
+    maxHeight: {
+        default: 600,
+        type: "number",
+        valid: (value) => {
+            let n = Number(value);
+            return n && n >= 0;
+        },
+    },
+    inputName: {
+        default: "sd" + sdGlobalCount++,
+        type: "string",
+    },
+    initialValues: {
+        default: [],
+        type: "array",
+    },
+    simpleInput: {
+        default: false,
+        type: "boolean",
+    },
+    textarea: {
+        default: false,
+        type: "boolean",
+    },
+};
+const optionParsing = {
+    string: (value) => value,
+    array: (value) => JSON.parse(value),
+    number: (value) => Number(value),
+    boolean: (value) => (value.toLowerCase() === "true" || value === true ? true : value.toLowerCase() === "false" || value === false ? false : undefined),
+};
 
 function searchdown(element, options) {
     //check element exists
