@@ -78,9 +78,15 @@ The layout of a searchdown field is shown below. You can use the classes to styl
 
 ## HTML-Only Declaration
 
-If you choose, you can avoid using JavaScript to declare your dropdowns by giving a div the class `.searchdown` and specifying the options using [data attributes](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_HTML_problems/Use_data_attributes) preceded by the prefix `sd_`. The only required attribute is `data-values`, which should be a string which will return an array with `JSON.parse()`. For example:
+If you choose, you can avoid using JavaScript to declare your dropdowns by giving a div the class `.searchdown` and specifying the options using [data attributes](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_HTML_problems/Use_data_attributes) preceded by the prefix `sd_`.
 
-    <div class="searchdown" data-sd_values='["Option 1","Option 2"]' data-sd_addValues="false" data-sd_limit="50" data-sd_hoverBackColor="green"></div>
+The only required attribute is `data-values`, which should be a string which will return an array with `JSON.parse()`.
+
+*Note: The HTML spec says data attributes should be lowercase. e.g. `addValues` becomes `addvalues`. Searchdown will understand!*
+
+For example:
+
+    <div class="searchdown" data-sd_values='["Option 1","Option 2"]' data-sd_addvalues="false" data-sd_limit="50" data-sd_hoverbackcolor="green"></div>
 
 If you want to disable automatically creating searchdown fields, add the following line of JS before including the searchdown JS file.
 
