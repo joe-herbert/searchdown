@@ -1,91 +1,169 @@
 let sdGlobalCount = 0;
-const sdOptions = {
-    values: {
-        default: [],
-        type: "array",
-        valid: (value) => {
-            return Array.isArray(value) && value.length > 0;
-        },
-    },
-    sort: {
-        default: undefined,
-        type: "string",
-        valid: (value) => {
-            return value === undefined || value === "ASC" || value === "DESC";
-        },
-    },
-    limit: {
-        default: 0,
-        type: "number",
-        valid: (value) => {
-            let n = Number(value);
-            return n && n >= 0;
-        },
-    },
-    multiple: {
-        default: false,
-        type: "boolean",
-    },
-    addValues: {
-        default: false,
-        type: "boolean",
-    },
-    saveEntered: {
-        default: true,
-        type: "boolean",
-        valid: (value, options) => {
-            return options.addValues || !value;
-        },
-    },
-    hideEntered: {
-        default: true,
-        type: "boolean",
-    },
-    allowDuplicates: {
-        default: false,
-        type: "boolean",
-    },
-    caseSensitive: {
-        default: false,
-        type: "boolean",
-    },
-    placeholder: {
-        default: "Search",
-        type: "string",
-    },
-    maxHeight: {
-        default: 600,
-        type: "number",
-        valid: (value) => {
-            let n = Number(value);
-            return n && n >= 0;
-        },
-    },
-    inputName: {
-        default: "sd" + sdGlobalCount++,
-        type: "string",
-    },
-    initialValues: {
-        default: [],
-        type: "array",
-    },
-    simpleInput: {
-        default: false,
-        type: "boolean",
-    },
-    textarea: {
-        default: false,
-        type: "boolean",
-    },
-};
-const optionParsing = {
-    string: (value) => value,
-    array: (value) => JSON.parse(value),
-    number: (value) => Number(value),
-    boolean: (value) => (value.toLowerCase() === "true" || value === true ? true : value.toLowerCase() === "false" || value === false ? false : undefined),
-};
+let sdMap = new Map();
 
-function searchdown(element, options) {
+class SdOption {
+    #name;
+    #defaultValue;
+    #type;
+    #valid;
+    #invalidMessage;
+    #value;
+
+    constructor(name, defaultValue, type, valid, invalidMessage) {
+        this.#name = name;
+        this.#defaultValue = defaultValue;
+        this.#type = type;
+        this.#valid = valid;
+        this.#invalidMessage = invalidMessage;
+    }
+
+    get(options) {
+        return this.#value || (typeof this.#defaultValue === "function" ? this.#defaultValue(options) : this.#defaultValue);
+    }
+
+    set(value, options) {
+        let parsed = this.#parse(value);
+        if (parsed === undefined) {
+            this.#value = undefined;
+            return true;
+        } else if (parsed !== null) {
+            if (typeof this.#valid === "undefined" || this.#valid(parsed, options)) {
+                this.#value = parsed;
+                return true;
+            } else {
+                console.error(`Searchdown: ${this.#invalidMessage || "Invalid value '" + value + "' for option '" + this.#name + "'"}`);
+                return false;
+            }
+        } else {
+            console.error(`Searchdown: Could not set value '${value}' for option '${this.#name}' because it was not of type '${this.#type}'`);
+            return false;
+        }
+    }
+
+    #parse(value) {
+        if (value === undefined || typeof value === this.#type) return value;
+        switch (this.#type) {
+            case "string":
+                return JSON.stringify(value);
+            case "array":
+                if (typeof value === "string") {
+                    try {
+                        let obj = JSON.parse(value);
+                        if (Array.isArray(obj)) return obj;
+                        return null;
+                    } catch {
+                        return null;
+                    }
+                } else if (typeof value === "object") {
+                    if (Array.isArray(value)) return value;
+                    return null;
+                } else {
+                    return null;
+                }
+            case "number":
+                let num = Number(value);
+                if (Number.isNaN(num)) return null;
+                return num;
+            case "boolean":
+                switch (value.toLowerCase()) {
+                    case "true":
+                    case "t":
+                    case "yes":
+                    case "y":
+                        return true;
+                    case "false":
+                    case "f":
+                    case "no":
+                    case "n":
+                        return false;
+                    default:
+                        return null;
+                }
+            default:
+                return null;
+        }
+    }
+}
+
+class SdOptions {
+    values = new SdOption("values", [], "array", (value) => {
+        return value.length > 0;
+    });
+    sort = new SdOption("sort", undefined, "string", (value) => {
+        return value === undefined || value === "ASC" || value === "DESC";
+    });
+    limit = new SdOption("limit", 0, "number", (value) => {
+        return value >= 0;
+    });
+    multiple = new SdOption(
+        "multiple",
+        false,
+        "boolean",
+        (value, options) => {
+            return !value || !options.get("simpleInput");
+        },
+        "Invalid value: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'multiple = false'"
+    );
+    addValues = new SdOption("addValues", false, "boolean");
+    saveEntered = new SdOption(
+        "saveEntered",
+        (options) => {
+            return !options.get("addValues");
+        },
+        "boolean",
+        (value, options) => {
+            return options.get("addValues") || !value;
+        },
+        "Invalid value: An element cannot have 'saveEntered = true' without 'addValues = true'. Setting 'saveEntered = false'"
+    );
+    hideEntered = new SdOption("hideEntered", true, "boolean");
+    allowDuplicates = new SdOption("allowDuplicates", false, "boolean");
+    caseSensitive = new SdOption("caseSensitive", false, "boolean");
+    placeholder = new SdOption("placeholder", "Search", "string");
+    maxHeight = new SdOption("maxHeight", 600, "number", (value) => {
+        return value >= 0;
+    });
+    inputName = new SdOption(
+        "inputName",
+        () => {
+            return "sd" + sdGlobalCount;
+        },
+        "string"
+    );
+    initialValues = new SdOption("initialValues", [], "array");
+    simpleInput = new SdOption(
+        "simpleInput",
+        false,
+        "boolean",
+        (value, options) => {
+            return !value || !options.get("multiple");
+        },
+        "Invalid value: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'simpleInput = false'"
+    );
+    textarea = new SdOption("textarea", false, "boolean");
+
+    constructor(opts) {
+        Object.keys(opts).forEach((option) => {
+            if (!this[option].set(opts[option], this)) {
+                console.error(`Searchdown: value '${opts[option]}' is invalid for option '${option}'`);
+            }
+        });
+    }
+
+    get(prop) {
+        return this[prop].get(this);
+    }
+
+    set(prop, value) {
+        return this[prop].set(value, this);
+    }
+
+    pushValue(value) {
+        return this.values.set(this.values.get(this).push(value), this);
+    }
+}
+
+function searchdown(element, optionsArg) {
     //check element exists
     if (typeof element === "string") {
         element = document.getElementById(element);
@@ -94,74 +172,35 @@ function searchdown(element, options) {
             return false;
         }
     }
-    //set default values
-    if (!options) {
-        options = {
-            values: [],
-            sort: undefined, //undefined, "ASC", "DESC"
-            limit: 0, //0 means no limit and is default
-            multiple: false,
-            addValues: false,
-            saveEntered: false,
-            hideEntered: true,
-            allowDuplicates: false,
-            caseSensitive: false,
-            placeholder: "Search",
-            maxHeight: 600,
-            inputName: "sd" + sdGlobalCount++,
-            initialValues: [],
-            simpleInput: false,
-            textarea: false,
-        };
-    } else {
-        if (options.values === undefined || !Array.isArray(options.values)) options.values = [];
-        if (options.sort !== undefined && options.sort !== "ASC" && options.sort !== "DESC") options.sort = undefined;
-        if (options.limit === undefined || isNaN(options.limit)) options.limit = 0;
-        if (options.multiple === undefined || typeof options.multiple !== "boolean") options.multiple = false;
-        if (options.addValues === undefined || typeof options.addValues !== "boolean") options.addValues = false;
-        if (options.saveEntered === undefined || typeof options.saveEntered !== "boolean") options.saveEntered = options.addValues; //defaults to true but only when addValues is enabled
-        if (options.hideEntered === undefined || typeof options.hideEntered !== "boolean") options.hideEntered = true;
-        if (options.allowDuplicates === undefined || typeof options.allowDuplicates !== "boolean") options.allowDuplicates = false;
-        if (options.caseSensitive === undefined || typeof options.caseSensitive !== "boolean") options.caseSensitive = false;
-        if (options.placeholder === undefined) options.placeholder = "Search";
-        if (options.maxHeight === undefined || isNaN(options.maxHeight)) options.maxHeight = 600;
-        if (options.inputName === undefined || options.inputName === "") options.inputName = "sd" + sdGlobalCount++;
-        if (options.initialValues === undefined || !Array.isArray(options.initialValues)) options.initialValues = [];
-        if (options.simpleInput === undefined || typeof options.simpleInput !== "boolean") options.simpleInput = false;
-        if (options.textarea === undefined || typeof options.textarea !== "boolean") options.textarea = false;
 
-        if (options.saveEntered && !options.addValues) {
-            console.error("Searchdown: An element cannot have 'saveEntered = true' without 'addValues = true'. Setting 'saveEntered = false'");
-            options.saveEntered = false;
-        }
+    sdGlobalCount++;
+    let options = new SdOptions(optionsArg);
+    sdMap.set(sdGlobalCount, options);
+    element.dataset.sdcount = sdGlobalCount;
 
-        if (options.simpleInput && options.multiple) {
-            console.error("Searchdown: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'simpleInput = false'");
-            options.simpleInput = false;
-        }
-    }
     //set colours
-    if (options.baseBackColor) {
-        element.style.setProperty("--sdBackBase", options.baseBackColor);
+    if (optionsArg.baseBackColor) {
+        element.style.setProperty("--sdBackBase", optionsArg.baseBackColor);
     }
-    if (options.selectedBackColor) {
-        element.style.setProperty("--sdBackSelected", options.selectedBackColor);
+    if (optionsArg.selectedBackColor) {
+        element.style.setProperty("--sdBackSelected", optionsArg.selectedBackColor);
     }
-    if (options.hoverBackColor) {
-        element.style.setProperty("--sdBackHover", options.hoverBackColor);
+    if (optionsArg.hoverBackColor) {
+        element.style.setProperty("--sdBackHover", optionsArg.hoverBackColor);
     }
-    if (options.baseTextColor) {
-        element.style.setProperty("--sdTextBase", options.baseTextColor);
+    if (optionsArg.baseTextColor) {
+        element.style.setProperty("--sdTextBase", optionsArg.baseTextColor);
     }
-    if (options.selectedTextColor) {
-        element.style.setProperty("--sdTextSelected", options.selectedTextColor);
+    if (optionsArg.selectedTextColor) {
+        element.style.setProperty("--sdTextSelected", optionsArg.selectedTextColor);
     }
-    if (options.hoverTextColor) {
-        element.style.setProperty("--sdTextHover", options.hoverTextColor);
+    if (optionsArg.hoverTextColor) {
+        element.style.setProperty("--sdTextHover", optionsArg.hoverTextColor);
     }
+
     //searchdown class
     element.classList.add("searchdown");
-    if (options.textarea) {
+    if (options.get("textarea")) {
         element.classList.add("textarea");
     }
     //create searchdown html
@@ -170,14 +209,14 @@ function searchdown(element, options) {
     inputWrapper.addEventListener("click", () => {
         inputWrapper.querySelector(".sdInput").focus();
     });
-    let input = document.createElement(options.textarea ? "textarea" : "input");
-    input.placeholder = options.placeholder;
+    let input = document.createElement(options.get("textarea") ? "textarea" : "input");
+    input.placeholder = options.get("placeholder");
     input.autocomplete = "off";
     input.classList.add("sdInput");
-    input.name = options.inputName + "LastInput";
+    input.name = options.get("inputName") + "LastInput";
     //create input or select
     let enteredInput;
-    if (options.multiple) {
+    if (options.get("multiple")) {
         enteredInput = document.createElement("select");
         enteredInput.multiple = true;
     } else {
@@ -186,8 +225,8 @@ function searchdown(element, options) {
     }
     enteredInput.classList.add("sdHide");
     enteredInput.classList.add("sdEnteredInput");
-    enteredInput.name = options.inputName;
-    enteredInput.id = "sdInput-" + options.inputName;
+    enteredInput.name = options.get("inputName");
+    enteredInput.id = "sdInput-" + options.get("inputName");
     let dropdownWrapper = document.createElement("div");
     dropdownWrapper.classList.add("sdDropdownWrapper");
     dropdownWrapper.classList.add("sdHide");
@@ -195,16 +234,16 @@ function searchdown(element, options) {
     dropdown.classList.add("sdDropdown");
     let enteredWrapper = document.createElement("div");
     enteredWrapper.classList.add("sdEnteredWrapper");
-    if (options.addValues) {
+    if (options.get("addValues")) {
         let addOption = document.createElement("li");
         addOption.classList.add("sdAddOption");
         addOption.addEventListener("click", (event) => {
             let searchdown = event.target.closest(".searchdown");
             let value = searchdown.querySelector(".sdInput").value;
             if (value !== "") {
-                sdAddEntered(options, searchdown, value, !options.simpleInput);
-                if (options.saveEntered) {
-                    options.values.push(value);
+                sdAddEntered(options, searchdown, value, !options.get("simpleInput"));
+                if (options.get("saveEntered")) {
+                    options.pushValue(value);
                 }
             }
         });
@@ -226,15 +265,15 @@ function searchdown(element, options) {
             let selected = searchdown.querySelector(".sdDropdown .sdSelected");
             let value = selected.innerHTML;
             if (selected.classList.contains("sdAddOption")) {
-                if (options.saveEntered && targetValue !== "") {
-                    options.values.push(targetValue);
+                if (options.get("saveEntered") && targetValue !== "") {
+                    options.pushValue(targetValue);
                 }
                 value = targetValue;
             }
             if (targetValue !== "" || !selected.classList.contains("sdAddOption")) {
-                sdAddEntered(options, searchdown, value, !options.simpleInput);
-                if (options.multiple) {
-                    sdSearchAndShowDropdown(options, target, options.simpleInput ? value : "");
+                sdAddEntered(options, searchdown, value, !options.get("simpleInput"));
+                if (options.get("multiple")) {
+                    sdSearchAndShowDropdown(options, target, options.get("simpleInput") ? value : "");
                 }
             }
             event.preventDefault();
@@ -261,7 +300,7 @@ function searchdown(element, options) {
             }
             //Remove value from enteredInput
             let enteredInput = searchdown.querySelector(".sdEnteredInput");
-            if (options.multiple) {
+            if (options.get("multiple")) {
                 enteredInput.querySelectorAll("option").forEach((opt) => {
                     if (opt.value === lastEntered.innerHTML) {
                         opt.remove();
@@ -279,7 +318,7 @@ function searchdown(element, options) {
         } else if (alphanumeric || event.key === "Backspace") {
             sdSearchAndShowDropdown(options, target, targetValue);
         }
-        sdResizeInput(target, event.key, options.simpleInput, options.textarea);
+        sdResizeInput(target, event.key, options.get("simpleInput"), options.get("textarea"));
     });
 
     input.addEventListener("focus", (event) => {
@@ -295,10 +334,8 @@ function searchdown(element, options) {
     element.appendChild(dropdownWrapper);
     element.appendChild(enteredInput);
 
-    element.dataset.options = JSON.stringify(options);
-
-    if (options.simpleInput) {
-        if (options.textarea) {
+    if (options.get("simpleInput")) {
+        if (options.get("textarea")) {
             input.style.width = "280px";
         } else {
             input.style.width = "100%";
@@ -307,13 +344,13 @@ function searchdown(element, options) {
         var computedStyle = getComputedStyle(inputWrapper);
         input.style.width = inputWrapper.offsetWidth - (parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight)) + "px";
     }
-    if (options.multiple) {
-        for (let val of options.initialValues) {
+    if (options.get("multiple")) {
+        for (let val of options.get("initialValues")) {
             sdAddEntered(options, element, val, false);
         }
     } else {
-        if (options.initialValues[0]) {
-            sdAddEntered(options, element, options.initialValues[0], false);
+        if (options.get("initialValues")[0]) {
+            sdAddEntered(options, element, options.get("initialValues")[0], false);
         }
     }
 }
@@ -351,7 +388,7 @@ function sdLoseFocus(searchdown) {
                 sd.querySelector(".sdDropdownWrapper").classList.add("sdHide");
             }
         });
-        if (JSON.parse(searchdown.dataset.options).multiple) {
+        if (sdMap.get(Number(searchdown.dataset.sdcount)).get("multiple")) {
             searchdown.querySelector(".sdInput").focus();
         }
     } else {
@@ -365,12 +402,12 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
     let entered = enteredWrapper.querySelector(".sdEntered");
     let input = searchdown.querySelector(".sdInput");
-    if (!options.multiple && entered) {
+    if (!options.get("multiple") && entered) {
         entered.innerHTML = value;
-    } else if (options.simpleInput) {
+    } else if (options.get("simpleInput")) {
         input.value = value;
     } else {
-        if (options.allowDuplicates || !sdEnteredContainsValue(enteredWrapper, value, options.caseSensitive)) {
+        if (options.get("allowDuplicates") || !sdEnteredContainsValue(enteredWrapper, value, options.get("caseSensitive"))) {
             let entered = document.createElement("span");
             entered.classList.add("sdEntered");
             entered.innerHTML = value;
@@ -379,7 +416,7 @@ function sdAddEntered(options, searchdown, value, clearInput) {
                 event.target.remove();
                 //Remove value from enteredInput
                 let enteredInput = searchdown.querySelector(".sdEnteredInput");
-                if (options.multiple) {
+                if (options.get("multiple")) {
                     enteredInput.querySelectorAll("option").forEach((opt) => {
                         if (opt.value === valToRemove) {
                             opt.remove();
@@ -396,42 +433,40 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     if (clearInput) {
         input.value = "";
     }
-    sdResizeInput(input, input.value, options.simpleInput, options.textarea);
+    sdResizeInput(input, input.value, options.get("simpleInput"), options.get("textarea"));
     //Add value to enteredInput
     let enteredInput = searchdown.querySelector(".sdEnteredInput");
-    if (options.multiple) {
+    if (options.get("multiple")) {
         let opt = document.createElement("option");
         opt.value = value;
         opt.selected = true;
         enteredInput.appendChild(opt);
     } else {
         enteredInput.value = value;
-    }
-    if (!options.multiple) {
         sdLoseFocus();
     }
 }
 
 function sdSearchAndShowDropdown(options, target, targetValue) {
-    if (options.values.length !== 0 || options.addValues) {
+    if (options.get("values").length !== 0 || options.get("addValues")) {
         let searchdown = target.closest(".searchdown");
         let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
         //filter values
-        let filteredValues = options.values.filter((value) => {
-            if (options.hideEntered && sdEnteredContainsValue(enteredWrapper, value, options.caseSensitive)) {
+        let filteredValues = options.get("values").filter((value) => {
+            if (options.get("hideEntered") && sdEnteredContainsValue(enteredWrapper, value, options.get("caseSensitive"))) {
                 return false;
             }
             //if caseSensitive
-            if (options.caseSensitive) {
+            if (options.get("caseSensitive")) {
                 return value.includes(targetValue);
             }
             return value.toLowerCase().includes(targetValue.toLowerCase());
         });
         //apply sort
-        if (options.sort === "ASC") filteredValues.sort();
-        else if (options.sort === "DESC") filteredValues.sort().reverse();
+        if (options.get("sort") === "ASC") filteredValues.sort();
+        else if (options.get("sort") === "DESC") filteredValues.sort().reverse();
         //apply limit
-        if (options.limit !== 0) filteredValues = filteredValues.slice(0, options.limit);
+        if (options.get("limit") !== 0) filteredValues = filteredValues.slice(0, options.get("limit"));
         //remove all existing options
         let dropdown = searchdown.querySelector(".sdDropdown");
         dropdown.querySelectorAll("li.sdOption:not(.sdAddOption)").forEach((li) => {
@@ -462,7 +497,7 @@ function sdSearchAndShowDropdown(options, target, targetValue) {
                 sdAddOption.classList.remove("sdSelected");
             }
         }
-        if (options.values.includes(targetValue)) {
+        if (options.get("values").includes(targetValue)) {
             if (sdAddOption) {
                 sdAddOption.classList.add("sdHide");
             }
@@ -471,7 +506,7 @@ function sdSearchAndShowDropdown(options, target, targetValue) {
                 dropdown.appendChild(sdAddOption);
                 sdAddOption.classList.remove("sdHide");
             }
-            if (options.addValues) {
+            if (options.get("addValues")) {
                 let message = `Press Enter to add <b>"${targetValue}"</b>`;
                 if (targetValue === "") {
                     message = "Type to enter a new value";
@@ -485,9 +520,9 @@ function sdSearchAndShowDropdown(options, target, targetValue) {
         let maxHeight = document.querySelector("body").getBoundingClientRect().bottom - searchdown.getBoundingClientRect().bottom;
         if (maxHeight < 80) {
             dropdownWrapper.classList.add("sdTop");
-            dropdownWrapper.style.maxHeight = Math.min(searchdown.getBoundingClientRect().top - document.querySelector("body").getBoundingClientRect().top, options.maxHeight) + "px";
+            dropdownWrapper.style.maxHeight = Math.min(searchdown.getBoundingClientRect().top - document.querySelector("body").getBoundingClientRect().top, options.get("maxHeight")) + "px";
         } else {
-            dropdownWrapper.style.maxHeight = Math.min(document.querySelector("body").getBoundingClientRect().bottom - searchdown.getBoundingClientRect().bottom, options.maxHeight) + "px";
+            dropdownWrapper.style.maxHeight = Math.min(document.querySelector("body").getBoundingClientRect().bottom - searchdown.getBoundingClientRect().bottom, options.get("maxHeight")) + "px";
         }
         dropdownWrapper.style.width = searchdown.getBoundingClientRect().width + "px";
         dropdownWrapper.classList.remove("sdHide");
@@ -513,15 +548,15 @@ function sdGetValue(element, includeNotEntered) {
             return false;
         }
     }
-    let options = JSON.parse(element.closest(".searchdown").dataset.options);
-    if (options.simpleInput) includeNotEntered = true;
+    let options = sdMap.get(Number(element.closest(".searchdown").dataset.sdcount));
+    if (options.get("simpleInput")) includeNotEntered = true;
     if (element.tagName === "SELECT") {
         let result = [];
-        let options = element && element.options;
+        let opts = element && element.options;
         let opt;
 
-        for (let i = 0; i < options.length; i++) {
-            opt = options[i];
+        for (let i = 0; i < opts.length; i++) {
+            opt = opts[i];
 
             if (opt.selected) {
                 result.push(opt.value || opt.text);
@@ -574,7 +609,7 @@ function sdSetValue(element, values) {
     }
     //add new values
     values.forEach((value) => {
-        sdAddEntered(JSON.parse(searchdown.dataset.options), searchdown, value, false);
+        sdAddEntered(sdMap(Number(searchdown.dataset.sdcount)), searchdown, value, false);
     });
     return false;
 }
