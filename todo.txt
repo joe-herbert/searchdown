@@ -7,3 +7,4 @@ When up or down arrow keys are pressed, make sure the dropdown is open
 When deleting an entered option, if dropdown is open then redo filter and showing so that just deleted option is added back to dropdown
 Add color options for sdEntered
 Hovering over a dropdown option should make that option the currently selected one, rather than having both a keyboard and mouse selection which can be confusing for the user
+If hideEntered is false, show some indicator against those options which are already selected

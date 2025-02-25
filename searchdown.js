@@ -18,7 +18,10 @@ class SdOption {
     }
 
     get(options) {
-        return this.#value || (typeof this.#defaultValue === "function" ? this.#defaultValue(options) : this.#defaultValue);
+        if (typeof this.#value === "undefined" || this.#value === null) {
+            return typeof this.#defaultValue === "function" ? this.#defaultValue(options) : this.#defaultValue;
+        }
+        return this.#value;
     }
 
     set(value, options) {
@@ -141,10 +144,23 @@ class SdOptions {
         "Invalid value: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'simpleInput = false'"
     );
     textarea = new SdOption("textarea", false, "boolean");
+    baseBackColor = new SdOption("baseBackColor", undefined, "string");
+    selectedBackColor = new SdOption("selectedBackColor", undefined, "string");
+    hoverBackColor = new SdOption("hoverBackColor", undefined, "string");
+    baseTextColor = new SdOption("baseTextColor", undefined, "string");
+    selectedTextColor = new SdOption("selectedTextColor", undefined, "string");
+    hoverTextColor = new SdOption("hoverTextColor", undefined, "string");
 
     constructor(opts) {
         Object.keys(opts).forEach((option) => {
-            if (!this[option].set(opts[option], this)) {
+            let prop = this[option];
+            if (!(prop instanceof SdOption)) {
+                let findProp = Object.getOwnPropertyNames(this).find((x) => x.toLowerCase() === option.toLowerCase());
+                if (!findProp) return;
+                prop = this[findProp];
+                if (!(prop instanceof SdOption)) return;
+            }
+            if (!prop.set(opts[option], this)) {
                 console.error(`Searchdown: value '${opts[option]}' is invalid for option '${option}'`);
             }
         });
@@ -174,28 +190,33 @@ function searchdown(element, optionsArg) {
     }
 
     sdGlobalCount++;
-    let options = new SdOptions(optionsArg);
+    let options;
+    if (optionsArg instanceof SdOptions) {
+        options = optionsArg;
+    } else {
+        options = new SdOptions(optionsArg);
+    }
     sdMap.set(sdGlobalCount, options);
     element.dataset.sdcount = sdGlobalCount;
 
     //set colours
-    if (optionsArg.baseBackColor) {
-        element.style.setProperty("--sdBackBase", optionsArg.baseBackColor);
+    if (options.get("baseBackColor")) {
+        element.style.setProperty("--sdBackBase", options.get("baseBackColor"));
     }
-    if (optionsArg.selectedBackColor) {
-        element.style.setProperty("--sdBackSelected", optionsArg.selectedBackColor);
+    if (options.get("selectedBackColor")) {
+        element.style.setProperty("--sdBackSelected", options.get("selectedBackColor"));
     }
-    if (optionsArg.hoverBackColor) {
-        element.style.setProperty("--sdBackHover", optionsArg.hoverBackColor);
+    if (options.get("hoverBackColor")) {
+        element.style.setProperty("--sdBackHover", options.get("hoverBackColor"));
     }
-    if (optionsArg.baseTextColor) {
-        element.style.setProperty("--sdTextBase", optionsArg.baseTextColor);
+    if (options.get("baseTextColor")) {
+        element.style.setProperty("--sdTextBase", options.get("baseTextColor"));
     }
-    if (optionsArg.selectedTextColor) {
-        element.style.setProperty("--sdTextSelected", optionsArg.selectedTextColor);
+    if (options.get("selectedTextColor")) {
+        element.style.setProperty("--sdTextSelected", options.get("selectedTextColor"));
     }
-    if (optionsArg.hoverTextColor) {
-        element.style.setProperty("--sdTextHover", optionsArg.hoverTextColor);
+    if (options.get("hoverTextColor")) {
+        element.style.setProperty("--sdTextHover", options.get("hoverTextColor"));
     }
 
     //searchdown class
@@ -628,18 +649,14 @@ document.addEventListener("DOMContentLoaded", () => {
 function sdAutoCreate() {
     let sds = document.querySelectorAll(".searchdown");
     sds.forEach((sd) => {
-        let opts = {};
-        Object.keys(sd.dataset)
+        let opts = Object.keys(sd.dataset)
             .filter((option) => option.substring(0, 3) === "sd_")
-            .forEach((option) => {
-                option = option.substring(3);
-                if (booleanOptions.includes(option)) opts[option] = sd.dataset[option] === "false" ? false : true;
-                else if (numericalOptions.includes(option)) opts[option] = Number(sd.dataset["sd_" + option]) || undefined;
-                else if (parseOptions.includes(option)) opts[option] = JSON.parse(sd.dataset["sd_" + option]) || undefined;
-                else opts[option] = sd.dataset[option];
-            });
+            .reduce((obj, option) => {
+                obj[option.substring(3)] = sd.dataset[option];
+                return obj;
+            }, {});
         if (!opts.hasOwnProperty("values")) {
-            console.warning("Searchdown: element must have attribute 'data-sd_values' to be automatically created", element);
+            console.warn("Searchdown: element must have attribute 'data-sd_values' to be automatically created", sd);
             return;
         }
         searchdown(sd, opts);
