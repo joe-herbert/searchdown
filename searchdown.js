@@ -119,7 +119,7 @@ class SdOptions {
         },
         "Invalid value: An element cannot have 'saveEntered = true' without 'addValues = true'. Setting 'saveEntered = false'"
     );
-    hideEntered = new SdOption("hideEntered", true, "boolean");
+    hideEntered = new SdOption("hideEntered", false, "boolean");
     allowDuplicates = new SdOption("allowDuplicates", false, "boolean");
     caseSensitive = new SdOption("caseSensitive", false, "boolean");
     placeholder = new SdOption("placeholder", "Search", "string");

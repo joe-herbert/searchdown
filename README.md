@@ -45,7 +45,7 @@ The default options are:
         multiple: false, //allow user to select multiple options
         addValues: false, //allow user to add their own options
         saveEntered: addValues, //save any options the user enters into the dropdown options. defaults to true when addValues is true but always false if addValues is false
-        hideEntered: true, //hide any currently selected options from the dropdown options
+        hideEntered: false, //hide any currently selected options from the dropdown options
         allowDuplicates: false, //allow user to add an option which is already in the dropdown options
         caseSensitive: false, //show options which match the user's search by case or not
         placeholder: "Search",
