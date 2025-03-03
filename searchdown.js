@@ -569,42 +569,46 @@ function sdGetValue(element, includeNotEntered) {
             return false;
         }
     }
-    let options = sdMap.get(Number(element.closest(".searchdown").dataset.sdcount));
-    if (options.get("simpleInput")) includeNotEntered = true;
-    if (element.tagName === "SELECT") {
-        let result = [];
-        let opts = element && element.options;
-        let opt;
+    if (element.classList.toString().contains("sd")) {
+        let options = sdMap.get(Number(element.closest(".searchdown").dataset.sdcount));
+        if (options.get("simpleInput")) includeNotEntered = true;
+        if (element.tagName === "SELECT") {
+            let result = [];
+            let opts = element && element.options;
+            let opt;
 
-        for (let i = 0; i < opts.length; i++) {
-            opt = opts[i];
+            for (let i = 0; i < opts.length; i++) {
+                opt = opts[i];
 
-            if (opt.selected) {
-                result.push(opt.value || opt.text);
+                if (opt.selected) {
+                    result.push(opt.value || opt.text);
+                }
             }
-        }
-        if (includeNotEntered) {
-            let last = document.getElementsByName(element.name + "LastInput")[0];
-            if (last && last.value) {
-                result.push(last.value);
+            if (includeNotEntered) {
+                let last = document.getElementsByName(element.name + "LastInput")[0];
+                if (last && last.value) {
+                    result.push(last.value);
+                }
             }
-        }
-        return result;
-    } else if (element.tagName) {
-        if (element.value) {
-            return element.value;
-        } else if (includeNotEntered) {
-            let last = document.getElementsByName(element.name + "LastInput")[0];
-            if (last && last.value) {
-                return last.value;
+            return result;
+        } else if (element.tagName) {
+            if (element.value) {
+                return element.value;
+            } else if (includeNotEntered) {
+                let last = document.getElementsByName(element.name + "LastInput")[0];
+                if (last && last.value) {
+                    return last.value;
+                } else {
+                    return "";
+                }
             } else {
                 return "";
             }
-        } else {
-            return "";
         }
+        return false;
+    } else {
+        return element.value || false;
     }
-    return false;
 }
 
 function sdSetValue(element, values) {
