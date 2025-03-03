@@ -621,22 +621,34 @@ function sdSetValue(element, values) {
     if (typeof values === "string") {
         values = [values];
     }
-    let searchdown = element.closest(".searchdown");
-    //remove current values
-    searchdown.querySelector(".sdEnteredWrapper").innerHTML = "";
-    if (element.tagName === "SELECT") {
-        let opts = element.options;
-        for (let i = 0; i < opts.length; i++) {
-            opts[i].remove();
+    if (element.classList.toString().contains("sd")) {
+        let searchdown = element.closest(".searchdown");
+        //remove current values
+        searchdown.querySelector(".sdEnteredWrapper").innerHTML = "";
+        if (element.tagName === "SELECT") {
+            let opts = element.options;
+            for (let i = 0; i < opts.length; i++) {
+                opts[i].remove();
+            }
+        } else if (element.tagName) {
+            element.value = "";
         }
-    } else if (element.tagName) {
-        element.value = "";
+        //add new values
+        values.forEach((value) => {
+            sdAddEntered(sdMap(Number(searchdown.dataset.sdcount)), searchdown, value, false);
+        });
+        return false;
+    } else {
+        if (element.tagName === "SELECT" && element.multiple) {
+            for (let i = 0; i < element.options.length; i++) {
+                if (values.includes(element.options[i].value)) {
+                    element.options[i].selected = true;
+                }
+            }
+        } else {
+            element.value = values[0];
+        }
     }
-    //add new values
-    values.forEach((value) => {
-        sdAddEntered(sdMap(Number(searchdown.dataset.sdcount)), searchdown, value, false);
-    });
-    return false;
 }
 
 const booleanOptions = ["multiple", "addValues", "saveEntered", "hideEntered", "allowDuplicates", "caseSensitive", "simpleInput", "textarea"];
