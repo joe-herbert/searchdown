@@ -63,6 +63,19 @@ class SdOption {
                 } else {
                     return null;
                 }
+            case "object":
+                if (typeof value === "string") {
+                    try {
+                        let obj = JSON.parse(value);
+                        return obj;
+                    } catch {
+                        return null;
+                    }
+                } else if (typeof value === "object") {
+                    return value;
+                } else {
+                    return null;
+                }
             case "number":
                 let num = Number(value);
                 if (Number.isNaN(num)) return null;
@@ -89,8 +102,12 @@ class SdOption {
 }
 
 class SdOptions {
-    values = new SdOption("values", [], "array", (value) => {
-        return value.length > 0;
+    values = new SdOption("values", [], "object", (value) => {
+        if (Array.isArray(value)) {
+            return value.length > 0;
+        } else if (typeof value === "object") {
+            return Object.keys(value).length > 0;
+        }
     });
     sort = new SdOption("sort", undefined, "string", (value) => {
         return value === undefined || value === "ASC" || value === "DESC";
@@ -419,16 +436,33 @@ function sdLoseFocus(searchdown) {
     }
 }
 
+function sdGetValueFromOptions(options, value) {
+    if (Array.isArray(options.get("values"))) {
+        if (options.get("values").includes(value)) {
+            return value;
+        } else {
+            return null;
+        }
+    } else {
+        if (options.get("values")[value]) {
+            return options.get("values")[value];
+        } else {
+            return value;
+        }
+    }
+}
+
 function sdAddEntered(options, searchdown, value, clearInput) {
+    optionsValue = sdGetValueFromOptions(options, value);
     let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
     let entered = enteredWrapper.querySelector(".sdEntered");
     let input = searchdown.querySelector(".sdInput");
     if (!options.get("multiple") && entered) {
-        entered.innerHTML = value;
+        entered.innerHTML = optionsValue;
     } else if (options.get("simpleInput")) {
-        input.value = value;
+        input.value = optionsValue;
     } else {
-        if (options.get("allowDuplicates") || !sdEnteredContainsValue(enteredWrapper, value, options.get("caseSensitive"))) {
+        if (options.get("allowDuplicates") || !sdEnteredContainsValue(enteredWrapper, optionsValue, options.get("caseSensitive"))) {
             let entered = document.createElement("span");
             entered.classList.add("sdEntered");
             entered.innerHTML = value;
@@ -439,7 +473,7 @@ function sdAddEntered(options, searchdown, value, clearInput) {
                 let enteredInput = searchdown.querySelector(".sdEnteredInput");
                 if (options.get("multiple")) {
                     enteredInput.querySelectorAll("option").forEach((opt) => {
-                        if (opt.value === valToRemove) {
+                        if (opt.value === sdGetValueFromOptions(options, valToRemove)) {
                             opt.remove();
                         }
                     });
@@ -459,11 +493,12 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     let enteredInput = searchdown.querySelector(".sdEnteredInput");
     if (options.get("multiple")) {
         let opt = document.createElement("option");
-        opt.value = value;
+        opt.innerText = value;
+        opt.value = optionsValue;
         opt.selected = true;
         enteredInput.appendChild(opt);
     } else {
-        enteredInput.value = value;
+        enteredInput.value = optionsValue;
         sdLoseFocus();
     }
 }
@@ -473,7 +508,8 @@ function sdSearchAndShowDropdown(options, target, targetValue) {
         let searchdown = target.closest(".searchdown");
         let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
         //filter values
-        let filteredValues = options.get("values").filter((value) => {
+        let values = Array.isArray(options.get("values")) ? options.get("values") : Object.keys(options.get("values"));
+        let filteredValues = values.filter((value) => {
             if (options.get("hideEntered") && sdEnteredContainsValue(enteredWrapper, value, options.get("caseSensitive"))) {
                 return false;
             }
@@ -518,7 +554,7 @@ function sdSearchAndShowDropdown(options, target, targetValue) {
                 sdAddOption.classList.remove("sdSelected");
             }
         }
-        if (options.get("values").includes(targetValue)) {
+        if (values.includes(targetValue)) {
             if (sdAddOption) {
                 sdAddOption.classList.add("sdHide");
             }
@@ -569,7 +605,7 @@ function sdGetValue(element, includeNotEntered) {
             return false;
         }
     }
-    if (element.classList.toString().contains("sd")) {
+    if (element.classList.toString().includes("sd")) {
         let options = sdMap.get(Number(element.closest(".searchdown").dataset.sdcount));
         if (options.get("simpleInput")) includeNotEntered = true;
         if (element.tagName === "SELECT") {
@@ -621,7 +657,7 @@ function sdSetValue(element, values) {
     if (typeof values === "string") {
         values = [values];
     }
-    if (element.classList.toString().contains("sd")) {
+    if (element.classList.toString().includes("sd")) {
         let searchdown = element.closest(".searchdown");
         //remove current values
         searchdown.querySelector(".sdEnteredWrapper").innerHTML = "";
@@ -650,10 +686,6 @@ function sdSetValue(element, values) {
         }
     }
 }
-
-const booleanOptions = ["multiple", "addValues", "saveEntered", "hideEntered", "allowDuplicates", "caseSensitive", "simpleInput", "textarea"];
-const numericalOptions = ["limit", "maxHeight"];
-const parseOptions = ["values", "initialValues"];
 
 // add searchdowns
 document.addEventListener("DOMContentLoaded", () => {

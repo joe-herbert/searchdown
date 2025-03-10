@@ -39,7 +39,7 @@ You can access the element's value like you would with any input element, or use
 The default options are:
 
     {
-        values: [],
+        values: [], //either an array of options or an object in the form {"Display Text", "Value to be submitted", ...}
         sort: undefined, //allowed values: undefined (don't sort), "ASC", "DESC"
         limit: 0, //maximum number of options in the dropdown. 0 means no limit
         multiple: false, //allow user to select multiple options

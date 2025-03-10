@@ -57,13 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
 function formSubmit(form) {
     document.getElementById("formResult").innerHTML =
         "Basic: " +
-        sdGetValue(form.basic, true) +
+        sdGetValue(form.basic) +
         "<br>Multiple: " +
-        sdGetValue(form.multiple, true) +
+        sdGetValue(form.multiple) +
         "<br>Add Value: " +
         sdGetValue(form.addValue, false) +
         "<br>Multiple Add Value: " +
         sdGetValue(form.multipleAddValue, false) +
         "<br>20,000 Options Value: " +
-        sdGetValue(form.largeValue, false);
+        sdGetValue(form.largeValue, true);
 }
