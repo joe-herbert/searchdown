@@ -438,7 +438,7 @@ function sdLoseFocus(searchdown) {
 
 function sdGetValueFromOptions(options, value) {
     if (Array.isArray(options.get("values"))) {
-        if (options.get("values").includes(value)) {
+        if (options.get("values").includes(value) || options.get("addValues")) {
             return value;
         } else {
             return null;
@@ -453,7 +453,7 @@ function sdGetValueFromOptions(options, value) {
 }
 
 function sdAddEntered(options, searchdown, value, clearInput) {
-    optionsValue = sdGetValueFromOptions(options, value);
+    let optionsValue = sdGetValueFromOptions(options, value);
     let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
     let entered = enteredWrapper.querySelector(".sdEntered");
     let input = searchdown.querySelector(".sdInput");
