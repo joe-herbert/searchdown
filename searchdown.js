@@ -482,7 +482,7 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     } else if (options.get("simpleInput")) {
         input.value = optionsValue;
     } else {
-        if (entered.length >= options.enteredLimit && opotions.enteredLimit > 0) {
+        if (entered.length >= options.get("enteredLimit") && options.get("enteredLimit") > 0) {
             sdMessage(`You cannot enter more than ${enteredLimit} option${enteredLimit === 1 ? "" : "s"}.`, "error");
             return;
         } else {
