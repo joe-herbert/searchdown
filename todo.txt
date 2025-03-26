@@ -1,5 +1,4 @@
 Add required option including valid function. When required option is true, don't allow user to delete all chosen options
-Max input length option
 Option to match regardless of accents
 Option to limit the number of elements which can be selected
 When using arrow keys to move down/up dropdown, scrollto currently selected (not smooth, just jump)
@@ -10,3 +9,4 @@ Hovering over a dropdown option should make that option the currently selected o
 If hideEntered is false, show some indicator against those options which are already selected
 Make sure clearing the input always works (search, use arrow keys to navigate but click on choice using mouse. hideEntered=true)
 Think about how we can do different values to options -> 'values' option could take either an array (like currently) or a map which maps the display name to the value
+Function to change setting after searchdown has been created
