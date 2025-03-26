@@ -401,6 +401,23 @@ document.addEventListener("click", (event) => {
     event.stopPropagation();
 });
 
+function sdMessage(text, className = "success") {
+    if (Toastify === undefined) {
+        alert(text);
+    } else {
+        Toastify({
+            duration: 5000,
+            gravity: "top",
+            position: "center",
+            offset: {
+                y: 80,
+            },
+            text: text,
+            className: className,
+        }).showToast();
+    }
+}
+
 function sdResizeInput(input, key, simpleInput, textarea) {
     if (simpleInput) {
         if (textarea) {
