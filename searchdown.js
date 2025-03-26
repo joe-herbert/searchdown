@@ -513,11 +513,21 @@ function sdSearchAndShowDropdown(options, target, targetValue) {
             if (options.get("hideEntered") && sdEnteredContainsValue(enteredWrapper, value, options.get("caseSensitive"))) {
                 return false;
             }
-            //if caseSensitive
-            if (options.get("caseSensitive")) {
-                return value.includes(targetValue);
+            if (typeof value === "object") {
+                const val = Object.values(value)[0];
+                const key = Object.keys(value)[0];
+                //if caseSensitive
+                if (options.get("caseSensitive")) {
+                    return val.includes(targetValue) || key.includes(targetValue);
+                }
+                return val.toLowerCase().includes(targetValue.toLowerCase()) || key.toLowerCase().includes(targetValue.toLowerCase());
+            } else {
+                //if caseSensitive
+                if (options.get("caseSensitive")) {
+                    return value.includes(targetValue);
+                }
+                return value.toLowerCase().includes(targetValue.toLowerCase());
             }
-            return value.toLowerCase().includes(targetValue.toLowerCase());
         });
         //apply sort
         if (options.get("sort") === "ASC") filteredValues.sort();
