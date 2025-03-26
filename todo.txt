@@ -10,3 +10,5 @@ If hideEntered is false, show some indicator against those options which are alr
 Make sure clearing the input always works (search, use arrow keys to navigate but click on choice using mouse. hideEntered=true)
 Think about how we can do different values to options -> 'values' option could take either an array (like currently) or a map which maps the display name to the value
 Function to change setting after searchdown has been created
+Define callback for when enteredLimit is exceeded
+Better error handling
