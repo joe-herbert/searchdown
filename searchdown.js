@@ -483,7 +483,7 @@ function sdAddEntered(options, searchdown, value, clearInput) {
         input.value = optionsValue;
     } else {
         if (entered.length >= options.enteredLimit && opotions.enteredLimit > 0) {
-            alert(`You cannot enter more than ${enteredLimit} option${enteredLimit === 1 ? "" : "s"}.`);
+            sdMessage(`You cannot enter more than ${enteredLimit} option${enteredLimit === 1 ? "" : "s"}.`, "error");
             return;
         } else {
             if (options.get("allowDuplicates") || !sdEnteredContainsValue(enteredWrapper, optionsValue, options.get("caseSensitive"))) {
