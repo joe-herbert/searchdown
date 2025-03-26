@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         values: valueList,
         sort: undefined, //undefined, "ASC", "DESC"
         limit: 0, //0 means no limit and is default
+        enteredLimit: 4,
         multiple: true,
         addValues: true,
         caseSensitive: true,
@@ -45,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
         values: cityNames,
         sort: undefined, //undefined, "ASC", "DESC"
         limit: 0, //0 means no limit and is default
-        enteredLimit: 15,
         multiple: false,
         addValues: true,
         caseSensitive: false,

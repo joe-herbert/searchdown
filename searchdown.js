@@ -402,7 +402,7 @@ document.addEventListener("click", (event) => {
 });
 
 function sdMessage(text, className = "success") {
-    if (Toastify === undefined) {
+    if (typeof Toastify === "undefined") {
         alert(text);
     } else {
         Toastify({
@@ -477,14 +477,15 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
     let entered = enteredWrapper.querySelectorAll(".sdEntered");
     let input = searchdown.querySelector(".sdInput");
+    let changeMade = true;
     if (!options.get("multiple") && entered.length > 0) {
         entered[0].innerHTML = optionsValue;
     } else if (options.get("simpleInput")) {
         input.value = optionsValue;
     } else {
         if (entered.length >= options.get("enteredLimit") && options.get("enteredLimit") > 0) {
-            sdMessage(`You cannot enter more than ${enteredLimit} option${enteredLimit === 1 ? "" : "s"}.`, "error");
-            return;
+            sdMessage(`You cannot enter more than ${options.get("enteredLimit")} option${options.get("enteredLimit") === 1 ? "" : "s"}.`, "error");
+            changeMade = false;
         } else {
             if (options.get("allowDuplicates") || !sdEnteredContainsValue(enteredWrapper, optionsValue, options.get("caseSensitive"))) {
                 let entered = document.createElement("span");
@@ -510,21 +511,23 @@ function sdAddEntered(options, searchdown, value, clearInput) {
             }
         }
     }
-    if (clearInput) {
-        input.value = "";
-    }
-    sdResizeInput(input, input.value, options.get("simpleInput"), options.get("textarea"));
-    //Add value to enteredInput
-    let enteredInput = searchdown.querySelector(".sdEnteredInput");
-    if (options.get("multiple")) {
-        let opt = document.createElement("option");
-        opt.innerText = value;
-        opt.value = optionsValue;
-        opt.selected = true;
-        enteredInput.appendChild(opt);
-    } else {
-        enteredInput.value = optionsValue;
-        sdLoseFocus();
+    if (changeMade) {
+        if (clearInput) {
+            input.value = "";
+        }
+        sdResizeInput(input, input.value, options.get("simpleInput"), options.get("textarea"));
+        //Add value to enteredInput
+        let enteredInput = searchdown.querySelector(".sdEnteredInput");
+        if (options.get("multiple")) {
+            let opt = document.createElement("option");
+            opt.innerText = value;
+            opt.value = optionsValue;
+            opt.selected = true;
+            enteredInput.appendChild(opt);
+        } else {
+            enteredInput.value = optionsValue;
+            sdLoseFocus();
+        }
     }
 }
 
