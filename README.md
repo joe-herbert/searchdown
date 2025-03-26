@@ -43,6 +43,7 @@ The default options are:
         sort: undefined, //allowed values: undefined (don't sort), "ASC", "DESC"
         limit: 0, //maximum number of options in the dropdown. 0 means no limit
         multiple: false, //allow user to select multiple options
+        enteredLimit: 0, //maximum number of options which can be selected. 0 means no limit. Only applies when multiple is true
         addValues: false, //allow user to add their own options
         saveEntered: addValues, //save any options the user enters into the dropdown options. defaults to true when addValues is true but always false if addValues is false
         hideEntered: false, //hide any currently selected options from the dropdown options
@@ -82,7 +83,7 @@ If you choose, you can avoid using JavaScript to declare your dropdowns by givin
 
 The only required attribute is `data-values`, which should be a string which will return an array with `JSON.parse()`.
 
-*Note: The HTML spec says data attributes should be lowercase. e.g. `addValues` becomes `addvalues`. Searchdown will understand!*
+_Note: The HTML spec says data attributes should be lowercase. e.g. `addValues` becomes `addvalues`. Searchdown will understand!_
 
 For example:
 

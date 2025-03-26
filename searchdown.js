@@ -115,6 +115,9 @@ class SdOptions {
     limit = new SdOption("limit", 0, "number", (value) => {
         return value >= 0;
     });
+    enteredLimit = new SdOption("enteredLimit", 0, "number", (value, options) => {
+        return value === 0 || (value > 0 && options.multiple);
+    });
     multiple = new SdOption(
         "multiple",
         false,
@@ -455,34 +458,39 @@ function sdGetValueFromOptions(options, value) {
 function sdAddEntered(options, searchdown, value, clearInput) {
     let optionsValue = sdGetValueFromOptions(options, value);
     let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
-    let entered = enteredWrapper.querySelector(".sdEntered");
+    let entered = enteredWrapper.querySelectorAll(".sdEntered");
     let input = searchdown.querySelector(".sdInput");
-    if (!options.get("multiple") && entered) {
-        entered.innerHTML = optionsValue;
+    if (!options.get("multiple") && entered.length > 0) {
+        entered[0].innerHTML = optionsValue;
     } else if (options.get("simpleInput")) {
         input.value = optionsValue;
     } else {
-        if (options.get("allowDuplicates") || !sdEnteredContainsValue(enteredWrapper, optionsValue, options.get("caseSensitive"))) {
-            let entered = document.createElement("span");
-            entered.classList.add("sdEntered");
-            entered.innerHTML = value;
-            entered.addEventListener("click", (event) => {
-                const valToRemove = event.target.innerHTML;
-                event.target.remove();
-                //Remove value from enteredInput
-                let enteredInput = searchdown.querySelector(".sdEnteredInput");
-                if (options.get("multiple")) {
-                    enteredInput.querySelectorAll("option").forEach((opt) => {
-                        if (opt.value === sdGetValueFromOptions(options, valToRemove)) {
-                            opt.remove();
-                        }
-                    });
-                } else {
-                    enteredInput.value = "";
-                }
-                event.stopPropagation();
-            });
-            enteredWrapper.appendChild(entered);
+        if (entered.length >= options.enteredLimit && opotions.enteredLimit > 0) {
+            alert(`You cannot enter more than ${enteredLimit} option${enteredLimit === 1 ? "" : "s"}.`);
+            return;
+        } else {
+            if (options.get("allowDuplicates") || !sdEnteredContainsValue(enteredWrapper, optionsValue, options.get("caseSensitive"))) {
+                let entered = document.createElement("span");
+                entered.classList.add("sdEntered");
+                entered.innerHTML = value;
+                entered.addEventListener("click", (event) => {
+                    const valToRemove = event.target.innerHTML;
+                    event.target.remove();
+                    //Remove value from enteredInput
+                    let enteredInput = searchdown.querySelector(".sdEnteredInput");
+                    if (options.get("multiple")) {
+                        enteredInput.querySelectorAll("option").forEach((opt) => {
+                            if (opt.value === sdGetValueFromOptions(options, valToRemove)) {
+                                opt.remove();
+                            }
+                        });
+                    } else {
+                        enteredInput.value = "";
+                    }
+                    event.stopPropagation();
+                });
+                enteredWrapper.appendChild(entered);
+            }
         }
     }
     if (clearInput) {
