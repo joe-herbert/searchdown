@@ -643,6 +643,9 @@ function sdGetValue(element, includeNotEntered) {
             return false;
         }
     }
+    if (element.classList.contains("searchdown")) {
+        element = element.querySelector(".sdEnteredInput");
+    }
     if (element.classList.toString().includes("sd")) {
         let options = sdMap.get(Number(element.closest(".searchdown").dataset.sdcount));
         if (options.get("simpleInput")) includeNotEntered = true;
