@@ -470,7 +470,6 @@ function sdGetValueStringFromOptions(options, value) {
 
 function sdAddEntered(options, searchdown, value, clearInput) {
     let valueString = sdGetValueStringFromOptions(options, value);
-    console.log("adding: ", value, valueString);
     let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
     let entered = enteredWrapper.querySelectorAll(".sdEntered");
     let input = searchdown.querySelector(".sdInput");
