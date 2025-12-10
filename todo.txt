@@ -12,3 +12,4 @@ Think about how we can do different values to options -> 'values' option could t
 Function to change setting after searchdown has been created
 Define callback for when enteredLimit is exceeded
 Better error handling
+Light/dark mode color scheme support
