@@ -66,8 +66,7 @@ class SdOption {
             case "object":
                 if (typeof value === "string") {
                     try {
-                        let obj = JSON.parse(value);
-                        return obj;
+                        return JSON.parse(value);
                     } catch {
                         return null;
                     }
@@ -118,27 +117,15 @@ class SdOptions {
     enteredLimit = new SdOption("enteredLimit", 0, "number", (value, options) => {
         return value === 0 || (value > 0 && options.multiple);
     });
-    multiple = new SdOption(
-        "multiple",
-        false,
-        "boolean",
-        (value, options) => {
-            return !value || !options.get("simpleInput");
-        },
-        "Invalid value: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'multiple = false'"
-    );
+    multiple = new SdOption("multiple", false, "boolean", (value, options) => {
+        return !value || !options.get("simpleInput");
+    }, "Invalid value: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'multiple = false'");
     addValues = new SdOption("addValues", false, "boolean");
-    saveEntered = new SdOption(
-        "saveEntered",
-        (options) => {
-            return !options.get("addValues");
-        },
-        "boolean",
-        (value, options) => {
-            return options.get("addValues") || !value;
-        },
-        "Invalid value: An element cannot have 'saveEntered = true' without 'addValues = true'. Setting 'saveEntered = false'"
-    );
+    saveEntered = new SdOption("saveEntered", (options) => {
+        return !options.get("addValues");
+    }, "boolean", (value, options) => {
+        return options.get("addValues") || !value;
+    }, "Invalid value: An element cannot have 'saveEntered = true' without 'addValues = true'. Setting 'saveEntered = false'");
     hideEntered = new SdOption("hideEntered", false, "boolean");
     allowDuplicates = new SdOption("allowDuplicates", false, "boolean");
     caseSensitive = new SdOption("caseSensitive", false, "boolean");
@@ -146,23 +133,13 @@ class SdOptions {
     maxHeight = new SdOption("maxHeight", 600, "number", (value) => {
         return value >= 0;
     });
-    inputName = new SdOption(
-        "inputName",
-        () => {
-            return "sd" + sdGlobalCount;
-        },
-        "string"
-    );
+    inputName = new SdOption("inputName", () => {
+        return "sd" + sdGlobalCount;
+    }, "string");
     initialValues = new SdOption("initialValues", [], "array");
-    simpleInput = new SdOption(
-        "simpleInput",
-        false,
-        "boolean",
-        (value, options) => {
-            return !value || !options.get("multiple");
-        },
-        "Invalid value: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'simpleInput = false'"
-    );
+    simpleInput = new SdOption("simpleInput", false, "boolean", (value, options) => {
+        return !value || !options.get("multiple");
+    }, "Invalid value: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'simpleInput = false'");
     textarea = new SdOption("textarea", false, "boolean");
     baseBackColor = new SdOption("baseBackColor", undefined, "string");
     selectedBackColor = new SdOption("selectedBackColor", undefined, "string");
@@ -304,7 +281,7 @@ function searchdown(element, optionsArg) {
         let searchdown = target.closest(".searchdown");
         if (event.key === "Enter") {
             let selected = searchdown.querySelector(".sdDropdown .sdSelected");
-            let value = selected.innerHTML;
+            let value = sdGetValueFromOptions(sdMap.get(Number(searchdown.dataset.sdcount)), selected.innerHTML);
             if (selected.classList.contains("sdAddOption")) {
                 if (options.get("saveEntered") && targetValue !== "") {
                     options.pushValue(targetValue);
@@ -382,16 +359,16 @@ function searchdown(element, optionsArg) {
             input.style.width = "100%";
         }
     } else {
-        var computedStyle = getComputedStyle(inputWrapper);
+        let computedStyle = getComputedStyle(inputWrapper);
         input.style.width = inputWrapper.offsetWidth - (parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight)) + "px";
     }
     if (options.get("multiple")) {
         for (let val of options.get("initialValues")) {
-            sdAddEntered(options, element, val, false);
+            sdAddEntered(options, element, sdGetValueFromOptions(sdMap.get(Number(element.dataset.sdcount)), val), false);
         }
     } else {
         if (options.get("initialValues")[0]) {
-            sdAddEntered(options, element, options.get("initialValues")[0], false);
+            sdAddEntered(options, element, sdGetValueFromOptions(sdMap.get(Number(element.dataset.sdcount)), options.get("initialValues")[0]), false);
         }
     }
 }
@@ -456,7 +433,24 @@ function sdLoseFocus(searchdown) {
     }
 }
 
-function sdGetValueFromOptions(options, value) {
+function sdGetValueFromOptions(options, valueString) {
+    if (!options) return valueString;
+    if (Array.isArray(options.get("values"))) {
+        if (options.get("values").includes(valueString) || options.get("addValues")) {
+            return valueString;
+        } else {
+            return null;
+        }
+    } else {
+        if (options.get("values")[valueString]) {
+            return options.get("values")[valueString];
+        } else {
+            return valueString;
+        }
+    }
+}
+
+function sdGetValueStringFromOptions(options, value) {
     if (Array.isArray(options.get("values"))) {
         if (options.get("values").includes(value) || options.get("addValues")) {
             return value;
@@ -464,41 +458,45 @@ function sdGetValueFromOptions(options, value) {
             return null;
         }
     } else {
-        if (options.get("values")[value]) {
-            return options.get("values")[value];
-        } else {
-            return value;
+        // Find the key (display text) where the value matches
+        for (let key in options.get("values")) {
+            if (options.get("values")[key] === value) {
+                return key;
+            }
         }
+        return value;
     }
 }
 
 function sdAddEntered(options, searchdown, value, clearInput) {
-    let optionsValue = sdGetValueFromOptions(options, value);
+    let valueString = sdGetValueStringFromOptions(options, value);
+    console.log("adding: ", value, valueString);
     let enteredWrapper = searchdown.querySelector(".sdEnteredWrapper");
     let entered = enteredWrapper.querySelectorAll(".sdEntered");
     let input = searchdown.querySelector(".sdInput");
     let changeMade = true;
     if (!options.get("multiple") && entered.length > 0) {
-        entered[0].innerHTML = optionsValue;
+        entered[0].innerHTML = valueString;
     } else if (options.get("simpleInput")) {
-        input.value = optionsValue;
+        input.value = value;
     } else {
         if (entered.length >= options.get("enteredLimit") && options.get("enteredLimit") > 0) {
             sdMessage(`You cannot enter more than ${options.get("enteredLimit")} option${options.get("enteredLimit") === 1 ? "" : "s"}.`, "error");
             changeMade = false;
         } else {
-            if (options.get("allowDuplicates") || !sdEnteredContainsValue(enteredWrapper, optionsValue, options.get("caseSensitive"))) {
+            if (options.get("allowDuplicates") || !sdEnteredContainsValue(enteredWrapper, value, options.get("caseSensitive"))) {
                 let entered = document.createElement("span");
                 entered.classList.add("sdEntered");
-                entered.innerHTML = value;
+                entered.innerHTML = valueString;
                 entered.addEventListener("click", (event) => {
-                    const valToRemove = event.target.innerHTML;
+                    const valueStringToRemove = event.target.innerHTML;
+                    const valueToRemove = sdGetValueFromOptions(options, valueStringToRemove);
                     event.target.remove();
                     //Remove value from enteredInput
                     let enteredInput = searchdown.querySelector(".sdEnteredInput");
                     if (options.get("multiple")) {
                         enteredInput.querySelectorAll("option").forEach((opt) => {
-                            if (opt.value === sdGetValueFromOptions(options, valToRemove)) {
+                            if (opt.value === valueToRemove) {
                                 opt.remove();
                             }
                         });
@@ -520,12 +518,12 @@ function sdAddEntered(options, searchdown, value, clearInput) {
         let enteredInput = searchdown.querySelector(".sdEnteredInput");
         if (options.get("multiple")) {
             let opt = document.createElement("option");
-            opt.innerText = value;
-            opt.value = optionsValue;
+            opt.innerText = valueString;
+            opt.value = value;
             opt.selected = true;
             enteredInput.appendChild(opt);
         } else {
-            enteredInput.value = optionsValue;
+            enteredInput.value = value;
             sdLoseFocus();
         }
     }
@@ -579,7 +577,7 @@ function sdSearchAndShowDropdown(options, target, targetValue) {
             opt.innerHTML = value;
             opt.addEventListener("click", (event) => {
                 if (value !== "") {
-                    sdAddEntered(options, event.target.closest(".searchdown"), event.target.innerHTML, false);
+                    sdAddEntered(options, event.target.closest(".searchdown"), sdGetValueFromOptions(sdMap.get(Number(searchdown.dataset.sdcount)), event.target.innerHTML), false);
                 }
             });
             dropdown.appendChild(opt);
@@ -712,7 +710,7 @@ function sdSetValue(element, values) {
         }
         //add new values
         values.forEach((value) => {
-            sdAddEntered(sdMap(Number(searchdown.dataset.sdcount)), searchdown, value, false);
+            sdAddEntered(sdMap.get(Number(searchdown.dataset.sdcount)), searchdown, sdGetValueFromOptions(sdMap.get(Number(element.dataset.sdcount)), value), false);
         });
         return false;
     } else {

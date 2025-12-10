@@ -9,6 +9,7 @@
     --sdTextHover: #000;
     --sdInput: #000;
 }
+
 .searchdown,
 .sdInputWrapper,
 .sdEnteredWrapper,
@@ -23,16 +24,19 @@
     font: inherit;
     color: var(--sdTextBase);
 }
+
 .searchdown {
     display: inline-block;
-    overflow-x: hidden;
     width: 300px;
+    position: relative;
 }
+
 .sdInputWrapper {
     border: 1px solid black;
     padding: 10px;
     cursor: text;
 }
+
 .sdInput {
     min-width: 20px;
     width: 55px;
@@ -47,9 +51,11 @@
     max-width: 100%;
     color: var(--sdInput);
 }
+
 .sdEnteredWrapper {
     display: inline;
 }
+
 .sdEntered {
     background-color: var(--sdBackBase);
     color: var(--sdTextBase);
@@ -59,6 +65,7 @@
     display: inline-block;
     cursor: pointer;
 }
+
 .sdEntered::before {
     content: "x";
     border-right: 1px solid #888;
@@ -69,16 +76,17 @@
     padding-bottom: 0px;
     position: relative;
     bottom: 1px;
-    transition:
-        0.6s opacity,
-        0.6s font-size,
-        0.6s bottom;
+    transition: 0.6s opacity,
+    0.6s font-size,
+    0.6s bottom;
 }
+
 .sdEntered:hover::before {
     opacity: 1;
     font-size: 1em;
     bottom: 0px;
 }
+
 .sdDropdownWrapper {
     width: inherit;
     overflow-x: hidden;
@@ -88,61 +96,74 @@
     background: var(--sdBackBase);
     transform: translateY(-1px);
 }
+
 .sdDropdownWrapper:not(:has(li)) {
     display: none;
 }
+
 .sdDropdownWrapper.sdTop {
     transform: translate(0, calc(-100% - 51px));
 }
+
 .sdDropdown {
     position: relative;
 }
+
 .sdOption,
 .sdAddOption {
     padding: 3px 10px;
-    transition:
-        0.3s background-color,
-        0.3s color;
+    transition: 0.3s background-color,
+    0.3s color;
     cursor: pointer;
     list-style: none;
     word-break: break-word;
     max-width: 100%;
 }
+
 .sdOption:hover,
 .sdAddOption:hover {
     background-color: var(--sdBackHover);
     color: var(--sdTextHover);
 }
+
 .sdOption:first-of-type,
 .sdAddOption:first-of-type {
     padding-top: 6px;
 }
+
 .sdOption:last-of-type,
 .sdAddOption:first-of-type {
     padding-bottom: 6px;
 }
+
 .sdSelected {
     background-color: var(--sdBackSelected);
     color: var(--sdTextSelected);
     font-weight: bold;
 }
+
 .sdSelected::before {
     content: ">";
     padding: 0 5px;
 }
+
 .sdHide {
     display: none;
 }
+
 .searchdown.textarea {
     width: auto;
 }
+
 .searchdown.textarea .sdInput {
     max-width: none;
 }
+
 .searchdown.textarea .sdDropdownWrapper {
     border: 0;
     display: none;
 }
+
 .searchdown.textarea .sdInputWrapper {
     display: inline-block;
 }

@@ -1,4 +1,7 @@
 Add required option including valid function. When required option is true, don't allow user to delete all chosen options
+Add onchange option which takes a function which is called when the value changes
+Add form reset for sd elements
+
 Option to match regardless of accents
 Option to limit the number of elements which can be selected
 When using arrow keys to move down/up dropdown, scrollto currently selected (not smooth, just jump)
