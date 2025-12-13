@@ -50,6 +50,7 @@ The default options are:
         allowDuplicates: false, //allow user to add an option which is already in the dropdown options
         caseSensitive: false, //show options which match the user's search by case or not
         placeholder: "Search",
+        required: 0, //integer for number of required values, 0 for not required. For single inputs, must be 0 or 1
         maxHeight: 600, //the maximum height of the dropdown in px
         inputName: "sd<incrementing-value>", //the value for the HTML attribute 'name' of the input
         initialValues: [], //values which should be selected initially

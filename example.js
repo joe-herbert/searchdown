@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
         sort: undefined, //undefined, "ASC", "DESC"
         limit: 0, //0 means no limit and is default
         multiple: false,
+        required: 1,
         addValues: false,
         caseSensitive: true,
         placeholder: "Search",

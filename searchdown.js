@@ -130,6 +130,9 @@ class SdOptions {
     allowDuplicates = new SdOption("allowDuplicates", false, "boolean");
     caseSensitive = new SdOption("caseSensitive", false, "boolean");
     placeholder = new SdOption("placeholder", "Search", "string");
+    required = new SdOption("required", 0, "number", (value, options) => {
+        return typeof value === "boolean" || (value >= 0 && (!options.get("multiple") || value <= 1));
+    }, "Invalid value: 'required' must be greater than 0 and must be 0 or 1 if 'multiple = false'");
     maxHeight = new SdOption("maxHeight", 600, "number", (value) => {
         return value >= 0;
     });
@@ -327,6 +330,9 @@ function searchdown(element, optionsArg) {
             } else {
                 enteredInput.value = "";
             }
+            if (options.get("required")) {
+                sdValidate(searchdown);
+            }
             sdSearchAndShowDropdown(options, target, "");
         } else if (event.key === "Tab") {
             sdLoseFocus();
@@ -370,6 +376,27 @@ function searchdown(element, optionsArg) {
         if (options.get("initialValues")[0]) {
             sdAddEntered(options, element, sdGetValueFromOptions(sdMap.get(Number(element.dataset.sdcount)), options.get("initialValues")[0]), false);
         }
+    }
+
+    if (options.get("required")) {
+        // Make the hidden input required so it participates in form validation
+        enteredInput.required = true;
+
+        // Set initial invalid state
+        const minRequired = options.get("required") === true ? 1 : options.get("required");
+        enteredInput.setCustomValidity(
+            minRequired === 1
+                ? "Please select an option"
+                : `Please select at least ${minRequired} options`
+        );
+
+        // Handle the invalid event to show custom UI feedback
+        enteredInput.addEventListener("invalid", (event) => {
+            event.preventDefault();  // Stops the "not focusable" error
+            element.classList.add("sdInvalid");
+            input.focus();  // Focus the visible input instead
+            sdMessage(enteredInput.validationMessage, "error");
+        });
     }
 }
 
@@ -474,6 +501,7 @@ function sdAddEntered(options, searchdown, value, clearInput) {
     let entered = enteredWrapper.querySelectorAll(".sdEntered");
     let input = searchdown.querySelector(".sdInput");
     let changeMade = true;
+
     if (!options.get("multiple") && entered.length > 0) {
         entered[0].innerHTML = valueString;
     } else if (options.get("simpleInput")) {
@@ -508,6 +536,7 @@ function sdAddEntered(options, searchdown, value, clearInput) {
             }
         }
     }
+
     if (changeMade) {
         if (clearInput) {
             input.value = "";
@@ -525,6 +554,10 @@ function sdAddEntered(options, searchdown, value, clearInput) {
             enteredInput.value = value;
             sdLoseFocus();
         }
+    }
+
+    if (options.get("required")) {
+        sdValidate(searchdown);
     }
 }
 
@@ -747,4 +780,87 @@ function sdAutoCreate() {
         }
         searchdown(sd, opts);
     });
+}
+
+function sdValidate(element) {
+    if (typeof element === "string") {
+        element = document.getElementById(element);
+        if (!element) return true;
+    }
+
+    const searchdown = element.classList.contains("searchdown")
+        ? element
+        : element.closest(".searchdown");
+
+    if (!searchdown) return true;
+
+    const options = sdMap.get(Number(searchdown.dataset.sdcount));
+    const required = options.get("required");
+
+    if (!required || required === 0) return true;
+
+    const enteredInput = searchdown.querySelector(".sdEnteredInput");
+    const input = searchdown.querySelector(".sdInput");
+    let count = 0;
+
+    if (options.get("simpleInput")) {
+        count = input.value.trim() !== "" ? 1 : 0;
+    } else if (options.get("multiple")) {
+        count = enteredInput.querySelectorAll("option").length;
+    } else {
+        count = enteredInput.value.trim() !== "" ? 1 : 0;
+    }
+
+    const minRequired = required === true ? 1 : required;
+    const isValid = count >= minRequired;
+
+    if (!isValid) {
+        const message = minRequired === 1
+            ? "Please select an option"
+            : `Please select at least ${minRequired} options`;
+        enteredInput.setCustomValidity(message);
+    } else {
+        enteredInput.setCustomValidity("");
+    }
+
+    // Visual feedback
+    searchdown.classList.toggle("sdInvalid", !isValid);
+
+    return isValid;
+}
+
+function sdReportValidity(element) {
+    if (typeof element === "string") {
+        element = document.getElementById(element);
+        if (!element) return true;
+    }
+
+    const searchdown = element.classList.contains("searchdown")
+        ? element
+        : element.closest(".searchdown");
+
+    if (!searchdown) return true;
+
+    sdValidate(searchdown);
+
+    const enteredInput = searchdown.querySelector(".sdEnteredInput");
+
+    // Temporarily make visible for validation message to show
+    const wasHidden = enteredInput.classList.contains("sdHide");
+    enteredInput.style.position = "absolute";
+    enteredInput.style.opacity = "0";
+    enteredInput.style.pointerEvents = "none";
+    enteredInput.classList.remove("sdHide");
+
+    const isValid = enteredInput.reportValidity();
+
+    // Restore hidden state
+    if (wasHidden) {
+        enteredInput.classList.add("sdHide");
+    }
+    enteredInput.style.position = "";
+    enteredInput.style.opacity = "";
+    enteredInput.style.pointerEvents = "";
+
+    return isValid;
 }
