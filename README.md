@@ -55,36 +55,37 @@ const {searchdown, getValue, setValue} = require('dist/searchdown');
 
 ## Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `values` | `string[]` or `object` | `[]` | Available options to select from |
-| `sort` | `'ASC'` \| `'DESC'` | `undefined` | Sort order for dropdown options |
-| `limit` | `number` | `0` | Max options to show (0 = unlimited) |
-| `enteredLimit` | `number` | `0` | Max selections allowed (0 = unlimited) |
-| `multiple` | `boolean` | `false` | Allow multiple selections |
-| `addValues` | `boolean` | `false` | Allow adding custom values |
-| `saveEntered` | `boolean` | `false` | Save custom values to options list |
-| `hideEntered` | `boolean` | `false` | Hide already-selected options |
-| `allowDuplicates` | `boolean` | `false` | Allow duplicate selections |
-| `caseSensitive` | `boolean` | `false` | Case-sensitive search |
-| `placeholder` | `string` | `'Search'` | Input placeholder text |
-| `required` | `number` \| `boolean` | `0` | Minimum required selections |
-| `maxHeight` | `number` | `600` | Max dropdown height in pixels |
-| `inputName` | `string` | auto | Form input name attribute |
-| `initialValues` | `string[]` | `[]` | Pre-selected values |
-| `simpleInput` | `boolean` | `false` | Single input mode (no tags) |
-| `textarea` | `boolean` | `false` | Use textarea instead of input |
-
+| Option            | Type                   | Default     | Description                                                                                                                    |
+|-------------------|------------------------|-------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `values`          | `string[]` or `object` | `[]`        | Available options to select from                                                                                               |
+| `sort`            | `'ASC'` \| `'DESC'`    | `undefined` | Sort order for dropdown options                                                                                                |
+| `limit`           | `number`               | `0`         | Max options to show (0 = unlimited)                                                                                            |
+| `enteredLimit`    | `number`               | `0`         | Max selections allowed (0 = unlimited)                                                                                         |
+| `multiple`        | `boolean`              | `false`     | Allow multiple selections                                                                                                      |
+| `addValues`       | `boolean`              | `false`     | Allow adding custom values                                                                                                     |
+| `saveEntered`     | `boolean`              | `false`     | Save custom values to options list                                                                                             |
+| `hideEntered`     | `boolean`              | `false`     | Hide already-selected options                                                                                                  |
+| `allowDuplicates` | `boolean`              | `false`     | Allow duplicate selections                                                                                                     |
+| `caseSensitive`   | `boolean`              | `false`     | Case-sensitive search                                                                                                          |
+| `placeholder`     | `string`               | `'Search'`  | Input placeholder text                                                                                                         |
+| `required`        | `number` \| `boolean`  | `0`         | Minimum required selections                                                                                                    |
+| `maxHeight`       | `number`               | `600`       | Max dropdown height in pixels                                                                                                  |
+| `inputName`       | `string`               | auto        | Form input name attribute                                                                                                      |
+| `initialValues`   | `string[]`             | `[]`        | Pre-selected values                                                                                                            |
+| `simpleInput`     | `boolean`              | `false`     | Single input mode (no tags)                                                                                                    |
+| `textarea`        | `boolean`              | `false`     | Use textarea instead of input                                                                                                  |
+| `onChange`        | `function`             | `null`      | Provide a function which is called whenever the selected options are changed. Takes two arguments: (element, value) => { ... } |
+ d
 ### Color Options
 
-| Option | Description |
-|--------|-------------|
-| `baseBackColor` | Background color |
+| Option              | Description              |
+|---------------------|--------------------------|
+| `baseBackColor`     | Background color         |
 | `selectedBackColor` | Selected item background |
-| `hoverBackColor` | Hover background |
-| `baseTextColor` | Text color |
+| `hoverBackColor`    | Hover background         |
+| `baseTextColor`     | Text color               |
 | `selectedTextColor` | Selected item text color |
-| `hoverTextColor` | Hover text color |
+| `hoverTextColor`    | Hover text color         |
 
 ## API
 
@@ -166,3 +167,10 @@ setMessageHandler(null);
 ## License
 
 MIT
+
+## Development
+
+1. Clone the repo
+2. `npm install`
+3. `npm run dev`
+4. Open `test/test.html` in your browser
