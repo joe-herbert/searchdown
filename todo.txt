@@ -17,3 +17,4 @@ Define callback for when enteredLimit is exceeded
 Better error handling
 Light/dark mode color scheme support
 Custom function for message
+Optional clear button to remove all selected options
