@@ -99,7 +99,12 @@ class SdOption {
                     default: return null;
                 }
             case "function":
-                return typeof value === "function" ? value : null;
+                if (typeof value === "function") return value;
+                if (typeof value === "string" && typeof window !== "undefined") {
+                    const fn = window[value];
+                    if (typeof fn === "function") return fn;
+                }
+                return null;
             default:
                 return null;
         }
@@ -170,7 +175,13 @@ class SdOptions {
     get(prop) { return this[prop].get(this); }
     set(prop, value) { return this[prop].set(value, this); }
     pushValue(value) { return this.values.set(this.values.get(this).push(value), this); }
-    callOnChange(element, value) { return this.onChange.get(this)(element, value); }
+    callOnChange(element, value) {
+        const fn = this.onChange.get(this);
+        if (typeof fn === 'function') {
+            return fn(element, value);
+        }
+        console.error("Searchdown: onChange function is not a function");
+    }
 }
 
 // Helper functions
