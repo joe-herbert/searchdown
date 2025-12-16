@@ -75,7 +75,7 @@ const {searchdown, getValue, setValue} = require('dist/searchdown');
 | `simpleInput`     | `boolean`              | `false`     | Single input mode (no tags)                                                                                                    |
 | `textarea`        | `boolean`              | `false`     | Use textarea instead of input                                                                                                  |
 | `onChange`        | `function`             | `null`      | Provide a function which is called whenever the selected options are changed. Takes two arguments: (element, value) => { ... } |
- d
+
 ### Color Options
 
 | Option              | Description              |
