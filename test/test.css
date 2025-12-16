@@ -1,0 +1,23 @@
+body {
+    font:
+        16px Arial,
+        sans-serif;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px 0;
+    margin: 0;
+}
+
+form,
+button {
+    margin: 0 auto;
+    text-align: center;
+}
+
+form * {
+    text-align: left;
+}
+
+.searchdown {
+    margin: 20px;
+}

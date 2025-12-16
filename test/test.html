@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="../dist/searchdown.css">
+        <link rel="stylesheet" href="test.css" />
+        <title>Searchdown Example</title>
+    </head>
+    <body>
+        <form onsubmit="formSubmit(this); return false;">
+            <label for="basic">Basic input:</label>
+            <br />
+            <div id="basic"></div>
+            <br />
+            <label for="multiple">Multiple input:</label>
+            <br />
+            <div id="multiple"></div>
+            <br />
+            <label for="addValue">Single input allowing added values:</label>
+            <br />
+            <div id="addValue"></div>
+            <br />
+            <label for="multiple-addValue">Multiple input allowing added values, limited to 4 options:</label>
+            <br />
+            <div id="multiple-addValue"></div>
+            <br />
+            <button type="submit">Submit</button>
+        </form>
+        <div id="formResult"></div>
+        <script src="../dist/searchdown.umd.js"></script>
+        <script src="test.js"></script>
+    </body>
+</html>
