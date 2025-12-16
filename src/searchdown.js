@@ -98,6 +98,8 @@ class SdOption {
                     case "false": case "f": case "no": case "n": return false;
                     default: return null;
                 }
+            case "function":
+                return typeof value === "function" ? value : null;
             default:
                 return null;
         }
@@ -140,6 +142,7 @@ class SdOptions {
                 !v || !o.get("multiple"),
             "Invalid value: An element cannot have both 'simpleInput = true' and 'multiple = true'. Setting 'simpleInput = false'"
         );
+        this.onChange = new SdOption("onChange", null, "function");
         this.textarea = new SdOption("textarea", false, "boolean");
         this.baseBackColor = new SdOption("baseBackColor", undefined, "string");
         this.selectedBackColor = new SdOption("selectedBackColor", undefined, "string");
@@ -167,6 +170,7 @@ class SdOptions {
     get(prop) { return this[prop].get(this); }
     set(prop, value) { return this[prop].set(value, this); }
     pushValue(value) { return this.values.set(this.values.get(this).push(value), this); }
+    callOnChange(element, value) { return this.onChange.get(this)(element, value); }
 }
 
 // Helper functions
@@ -273,6 +277,7 @@ function addEntered(options, searchdownEl, value, clearInput) {
                 } else {
                     enteredInput.value = "";
                 }
+                options.callOnChange(searchdownEl, getValue(searchdownEl));
                 e.stopPropagation();
             });
             enteredWrapper.appendChild(enteredSpan);
@@ -293,6 +298,7 @@ function addEntered(options, searchdownEl, value, clearInput) {
             enteredInput.value = value;
             loseFocus();
         }
+        options.callOnChange(searchdownEl, getValue(searchdownEl));
     }
 
     if (options.get("required")) validate(searchdownEl);
@@ -536,6 +542,7 @@ export function searchdown(element, optionsArg = {}) {
                     ei.value = "";
                 }
                 if (options.get("required")) validate(sd);
+                options.callOnChange(sd, getValue(sd));
                 searchAndShowDropdown(options, input, "");
             }
         } else if (e.key === "Tab") {
@@ -639,8 +646,10 @@ export function setValue(element, values) {
         values.forEach((v) => addEntered(instanceMap.get(Number(sd.dataset.sdcount)), sd, getValueFromOptions(instanceMap.get(Number(element.dataset.sdcount)), v), false));
     } else if (element.tagName === "SELECT" && element.multiple) {
         [...element.options].forEach((o) => { if (values.includes(o.value)) o.selected = true; });
+        options.callOnChange(element, getValue(element));
     } else {
         element.value = values[0];
+        options.callOnChange(element, getValue(element));
     }
 }
 
