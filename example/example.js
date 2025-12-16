@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const valueList = ["France", "England", "Spain", "Wales", "Ireland", "Germany", "Portugal", "Italy"];
-    searchdown("basic", {
+    Searchdown.searchdown("basic", {
         values: valueList,
         sort: undefined, //undefined, "ASC", "DESC"
         limit: 0, //0 means no limit and is default
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
         placeholder: "Search",
         inputName: "basic",
     });
-    searchdown("multiple", {
+    Searchdown.searchdown("multiple", {
         values: ["France", "England", "Spain", "Wales", "Ireland", "Germany", "Portugal", "Italy"],
         sort: "ASC", //undefined, "ASC", "DESC"
         limit: 0, //0 means no limit and is default
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         placeholder: "Enter a country", //default is "Search"
         inputName: "multiple",
     });
-    searchdown("addValue", {
+    Searchdown.searchdown("addValue", {
         values: ["France", "England", "Spain", "Wales", "Ireland", "Germany", "Portugal", "Italy"],
         sort: "DESC", //undefined, "ASC", "DESC"
         limit: 0, //0 means no limit and is default
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         placeholder: "Search",
         inputName: "addValue",
     });
-    searchdown("multiple-addValue", {
+    Searchdown.searchdown("multiple-addValue", {
         values: valueList,
         sort: undefined, //undefined, "ASC", "DESC"
         limit: 0, //0 means no limit and is default
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveEntered: false,
         inputName: "multipleAddValue",
     });
-    searchdown("largeValue", {
+    Searchdown.searchdown("largeValue", {
         values: cityNames,
         sort: undefined, //undefined, "ASC", "DESC"
         limit: 0, //0 means no limit and is default
@@ -59,13 +59,13 @@ document.addEventListener("DOMContentLoaded", () => {
 function formSubmit(form) {
     document.getElementById("formResult").innerHTML =
         "Basic: " +
-        sdGetValue(form.basic) +
+        Searchdown.getValue(form.basic) +
         "<br>Multiple: " +
-        sdGetValue(form.multiple) +
+        Searchdown.getValue(form.multiple) +
         "<br>Add Value: " +
-        sdGetValue(form.addValue, false) +
+        Searchdown.getValue(form.addValue, false) +
         "<br>Multiple Add Value: " +
-        sdGetValue(form.multipleAddValue, false) +
+        Searchdown.getValue(form.multipleAddValue, false) +
         "<br>20,000 Options Value: " +
-        sdGetValue(form.largeValue, true);
+        Searchdown.getValue(form.largeValue, true);
 }

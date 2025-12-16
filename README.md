@@ -1,95 +1,168 @@
 <img src="logo.png" width="300px" alt="Logo"/>
 
-# searchdown
+# Searchdown
 
-A lightweight JS library to provide a searchable dropdown input field.
+A searchable dropdown/select component with tagging and multi-select support.
 
-Provides a range of options and works seamlessly with large datasets.
+## Demo
 
 [Here's a demo](https://joe-herbert.github.io/searchdown/example.html)
 
+## Installation
+
+```bash
+npm install searchdown
+```
+
 ## Usage
 
-Download `searchdown.js` and `searchdown.css` or the minified versions.  
-Add the CSS in the page `head`.
+### ES6 Modules (Recommended)
 
-    <link rel="stylesheet" href="<path-to>searchdown.css">
+```javascript
+import searchdown, {getValue, setValue, validate} from 'dist/searchdown';
+import 'searchdown/styles'; // Import CSS
 
-Add the JS to the bottom of the page `body` (or wherever else you prefer).
+// Initialize on an element
+searchdown('#my-dropdown', {
+    values: ['Apple', 'Banana', 'Cherry', 'Date'],
+    placeholder: 'Select a fruit...',
+    multiple: true
+});
 
-    <script src="<path-to>searchdown.js"></script>
+// Get selected values
+const selected = getValue('#my-dropdown');
 
-Call `searchdown(element, options);` (must be done after including the js file). `element` can be the HTML element or an element's id, e.g.
+// Set values programmatically
+setValue('#my-dropdown', ['Apple', 'Cherry']);
+```
 
-    document.addEventListener("DOMContentLoaded", () => {
-        searchdown("my-dropdown", {
-            values: ["France", "England", "Spain", "Wales", "Ireland", "Germany", "Portugal", "Italy"],
-            sort: "ASC",
-            multiple: true,
-            caseSensitive: true,
-            placeholder: "Choose your item",
-            inputName: "myDropdown",
-        });
-    });
+### CommonJS
 
-You can access the element's value like you would with any input element, or use the function `sdGetValue(element, includeNotEntered)` to easily retrieve the value for both single and multiple inputs. `element` can be either the HTML element or the id of the element. Check the [demo](https://joe-herbert.github.io/searchdown/example.html) for an example of this being used.
+```javascript
+const {searchdown, getValue, setValue} = require('dist/searchdown');
+```
+
+### Browser (UMD)
+
+```html
+<script src="https://unpkg.com/searchdown/dist/searchdown.umd.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/searchdown/dist/searchdown.css">
+
+<script>
+    Searchdown.searchdown('#my-dropdown', { values: ['A', 'B', 'C'] });
+</script>
+```
 
 ## Options
 
-The default options are:
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `values` | `string[]` or `object` | `[]` | Available options to select from |
+| `sort` | `'ASC'` \| `'DESC'` | `undefined` | Sort order for dropdown options |
+| `limit` | `number` | `0` | Max options to show (0 = unlimited) |
+| `enteredLimit` | `number` | `0` | Max selections allowed (0 = unlimited) |
+| `multiple` | `boolean` | `false` | Allow multiple selections |
+| `addValues` | `boolean` | `false` | Allow adding custom values |
+| `saveEntered` | `boolean` | `false` | Save custom values to options list |
+| `hideEntered` | `boolean` | `false` | Hide already-selected options |
+| `allowDuplicates` | `boolean` | `false` | Allow duplicate selections |
+| `caseSensitive` | `boolean` | `false` | Case-sensitive search |
+| `placeholder` | `string` | `'Search'` | Input placeholder text |
+| `required` | `number` \| `boolean` | `0` | Minimum required selections |
+| `maxHeight` | `number` | `600` | Max dropdown height in pixels |
+| `inputName` | `string` | auto | Form input name attribute |
+| `initialValues` | `string[]` | `[]` | Pre-selected values |
+| `simpleInput` | `boolean` | `false` | Single input mode (no tags) |
+| `textarea` | `boolean` | `false` | Use textarea instead of input |
 
-    {
-        values: [], //either an array of options or an object in the form {"Display Text": "Value to be submitted", ...}
-        sort: undefined, //allowed values: undefined (don't sort), "ASC", "DESC"
-        limit: 0, //maximum number of options in the dropdown. 0 means no limit
-        multiple: false, //allow user to select multiple options
-        enteredLimit: 0, //maximum number of options which can be selected. 0 means no limit. Only applies when multiple is true
-        addValues: false, //allow user to add their own options
-        saveEntered: addValues, //save any options the user enters into the dropdown options. defaults to true when addValues is true but always false if addValues is false
-        hideEntered: false, //hide any currently selected options from the dropdown options
-        allowDuplicates: false, //allow user to add an option which is already in the dropdown options
-        caseSensitive: false, //show options which match the user's search by case or not
-        placeholder: "Search",
-        required: 0, //integer for number of required values, 0 for not required. For single inputs, must be 0 or 1
-        maxHeight: 600, //the maximum height of the dropdown in px
-        inputName: "sd<incrementing-value>", //the value for the HTML attribute 'name' of the input
-        initialValues: [], //values which should be selected initially
-        simpleInput: false, //doesn't show the items in selected bubbles, just uses a standard input field. requires multiple to be false
-        textarea: false, //instead of an input, use a textarea for longer text entry
-        baseBackColor: "#b1d3f7",
-        selectedBackColor: "#90a0c3",
-        hoverBackColor: "#8ab7d9",
-        baseTextColor: "#000",
-        selectedTextColor: "#000",
-        hoverTextColor: "#000",
-    }
+### Color Options
 
-## Styling
+| Option | Description |
+|--------|-------------|
+| `baseBackColor` | Background color |
+| `selectedBackColor` | Selected item background |
+| `hoverBackColor` | Hover background |
+| `baseTextColor` | Text color |
+| `selectedTextColor` | Selected item text color |
+| `hoverTextColor` | Hover text color |
 
-The layout of a searchdown field is shown below. You can use the classes to style elements through your own custom CSS.
+## API
 
-    div.searchdown
-        div.sdInputWrapper
-            div.sdEnteredWrapper
-                span.sdEntered
-            input.sdInput
-        div.sdDropdownWrapper
-            ul.sdDropdown
-                li.sdOption
-                li.sdAddOption //only if addValues is true
+### `searchdown(element, options)`
 
-## HTML-Only Declaration
+Initialize a searchdown instance.
 
-If you choose, you can avoid using JavaScript to declare your dropdowns by giving a div the class `.searchdown` and specifying the options using [data attributes](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_HTML_problems/Use_data_attributes) preceded by the prefix `sd_`.
+### `getValue(element, includeNotEntered?)`
 
-The only required attribute is `data-values`, which should be a string which will return an array with `JSON.parse()`.
+Get the selected value(s). Returns a string for single-select or array for multi-select.
 
-_Note: The HTML spec says data attributes should be lowercase. e.g. `addValues` becomes `addvalues`. Searchdown will understand!_
+### `setValue(element, values)`
 
-For example:
+Set the selected value(s) programmatically.
 
-    <div class="searchdown" data-sd_values='["Option 1","Option 2"]' data-sd_addvalues="false" data-sd_limit="50" data-sd_hoverbackcolor="green"></div>
+### `validate(element)`
 
-If you want to disable automatically creating searchdown fields, add the following line of JS before including the searchdown JS file.
+Validate the element and return validity status.
 
-    const SEARCHDOWN_AUTO_CREATE = false;
+### `reportValidity(element)`
+
+Validate and show browser validation UI.
+
+### `autoCreate()`
+
+Auto-initialize all elements with `class="searchdown"` and `data-sd_*` attributes.
+
+### `enableAutoCreate()`
+
+Enable automatic initialization on DOMContentLoaded.
+
+### `setMessageHandler(handler)`
+
+Set a custom message handler for all searchdown instances. By default, messages are shown using `alert()`.
+
+```javascript
+import { setMessageHandler } from 'dist/searchdown';
+
+// Use with Toastify
+setMessageHandler((text, type) => {
+  Toastify({ 
+    text, 
+    type,  // "success" or "error"
+    duration: 5000,
+    gravity: "top",
+    position: "center"
+  }).showToast();
+});
+
+// Use with a custom notification system
+setMessageHandler((text, type) => {
+  myNotificationSystem.show(text, { type: type });
+});
+
+// Reset to default (alert)
+setMessageHandler(null);
+```
+
+**Parameters:**
+- `handler` - A function that receives `(text, type)` where `type` is either `"success"` or `"error"`. Pass `null` to reset to the default `alert()` behavior.
+
+## Auto-Creation via Data Attributes
+
+```html
+
+<div class="searchdown"
+     data-sd_values='["Option 1", "Option 2", "Option 3"]'
+     data-sd_multiple="true"
+     data-sd_placeholder="Choose options...">
+</div>
+
+<script type="module">
+    import {enableAutoCreate} from 'dist/searchdown';
+
+    enableAutoCreate();
+</script>
+```
+
+## License
+
+MIT

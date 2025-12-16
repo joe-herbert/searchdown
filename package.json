@@ -1,0 +1,51 @@
+{
+  "name": "searchdown",
+  "version": "1.0.1",
+  "type": "module",
+  "description": "A searchable dropdown/select component with tagging support",
+  "main": "dist/searchdown.cjs.js",
+  "module": "dist/searchdown.esm.js",
+  "browser": "dist/searchdown.umd.js",
+  "types": "dist/searchdown.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/searchdown.esm.js",
+      "require": "./dist/searchdown.cjs.js",
+      "browser": "./dist/searchdown.umd.js"
+    },
+    "./styles": "./dist/searchdown.css"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "dropdown",
+    "select",
+    "search",
+    "autocomplete",
+    "tagging",
+    "multiselect"
+  ],
+  "author": "Joe Herbert",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joe-herbert/searchdown"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "cssnano": "^7.0.0",
+    "rollup": "^4.9.0",
+    "rollup-plugin-postcss": "^4.0.2"
+  },
+  "peerDependencies": {},
+  "sideEffects": [
+    "*.css"
+  ]
+}
