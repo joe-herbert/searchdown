@@ -180,6 +180,7 @@ class SdOptions {
         if (typeof fn === 'function') {
             return fn(element, value);
         }
+        console.log(fn, typeof fn);
         console.error("Searchdown: onChange function is not a function");
     }
 }

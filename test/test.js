@@ -1,5 +1,7 @@
 let count = 0;
 document.addEventListener("DOMContentLoaded", () => {
+    Searchdown.enableAutoCreate();
+
     const valueList = ["France", "England", "Spain", "Wales", "Ireland", "Germany", "Portugal", "Italy"];
     Searchdown.searchdown("basic", {
         values: valueList,
@@ -50,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function formSubmit(form) {
+    const parentValue = Searchdown.getValue(form.parentType, false);
     document.getElementById("formResult").innerHTML =
         "Basic: " +
         Searchdown.getValue(form.basic) +
@@ -58,5 +61,11 @@ function formSubmit(form) {
         "<br>Add Value: " +
         Searchdown.getValue(form.addValue, false) +
         "<br>Multiple Add Value: " +
-        Searchdown.getValue(form.multipleAddValue, false);
+        Searchdown.getValue(form.multipleAddValue, false) +
+        "<br>Parent Type: " +
+        (parentValue === "other" ? form.parentOther.value : parentValue);
+}
+
+function parentChange(element, value) {
+    document.getElementById("parent-searchdown-other").style.display = value === "other" ? "block" : "none";
 }

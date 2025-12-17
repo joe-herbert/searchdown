@@ -25,6 +25,11 @@
             <br />
             <div id="multiple-addValue"></div>
             <br />
+            <label for="parent-searchdown">Searchdown defined through HTML with Other field</label>
+            <br />
+            <div id="parent-searchdown" class="searchdown" data-sd_values='{"Mother":"mother","Father":"father","Guardian":"guardian","Other":"other"}' data-sd_inputname="parentType" data-sd_onchange="parentChange"></div>
+            <input type="text" id="parent-searchdown-other" name="parentOther" style="display: none; margin: 0 auto;" placeholder="Other">
+            <br />
             <button type="submit">Submit</button>
         </form>
         <div id="formResult"></div>
