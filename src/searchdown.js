@@ -180,8 +180,9 @@ class SdOptions {
         if (typeof fn === 'function') {
             return fn(element, value);
         }
-        console.log(fn, typeof fn);
-        console.error("Searchdown: onChange function is not a function");
+        if (fn) {
+            console.error("Searchdown: onChange function is not a function for element: ", element.id ?? element);
+        }
     }
 }
 
@@ -658,10 +659,8 @@ export function setValue(element, values) {
         values.forEach((v) => addEntered(instanceMap.get(Number(sd.dataset.sdcount)), sd, getValueFromOptions(instanceMap.get(Number(element.dataset.sdcount)), v), false));
     } else if (element.tagName === "SELECT" && element.multiple) {
         [...element.options].forEach((o) => { if (values.includes(o.value)) o.selected = true; });
-        options.callOnChange(element, getValue(element));
     } else {
         element.value = values[0];
-        options.callOnChange(element, getValue(element));
     }
 }
 
