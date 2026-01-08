@@ -1,6 +1,6 @@
 {
   "name": "searchdown",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "type": "module",
   "description": "A searchable dropdown/select component with tagging support",
   "main": "dist/searchdown.cjs.js",

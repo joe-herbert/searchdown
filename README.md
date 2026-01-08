@@ -6,7 +6,7 @@ A searchable dropdown/select component with tagging and multi-select support.
 
 ## Demo
 
-[Here's a demo](https://joe-herbert.github.io/searchdown/example/example.html)
+[Here's a demo](https://molly-ollys.github.io/searchdown/example/example.html)
 
 ## Installation
 
